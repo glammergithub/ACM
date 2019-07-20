@@ -1,0 +1,58 @@
+题意：给了n堆石子，m个学生，每个学生移除第i个石子需要花费i+1的时间（即走路的时间和移除石子的时间），问移除所有石子的最小时间是多少
+
+分析：二分枚举所有的搬走石子的时间，最多为搬走的石子用的时间和（这里先不考虑走路的时间），然后在对于每一个枚举的情况判断是否可行。就是对于有石子的位置
+来说，判断走路的时间和搬走石子的时间会不会超过枚举的时间，会的话就需要增加一个人来搬，这个时候人除了走路的时间剩下的时间可以用于搬其他的石子，用于搬
+石子的时间就相应减少了这么多。接着继续判断下一个位置和搬走这个位置的石子的时间会不会超，重复之前的操作。如果人数为负或者人用完了石子还没搬完，时间就
+不可行。
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+const int maxn = 1e5 + 10;
+ll a[maxn];
+int n,m;
+int judge(ll x)
+{
+    ll tot = 0;
+    int cnt = m;
+    for(int i = 1; i <= n; i++)
+    {
+        if(a[i])
+        {
+            tot += a[i];
+        while(tot + i > x)
+        {
+            tot -= (x - i);
+            cnt--;
+            if(cnt < 0)return 0;
+        }
+        }
+
+    }
+    if(cnt == 0)return tot <= 0;
+    return 1;
+}
+int main()
+{
+    cin>>n>>m;
+    ll sum = 0;
+    for(int i = 1; i <= n; i++)
+    {
+        cin>>a[i];
+        sum += a[i];
+    }
+    ll res = 0;
+    ll l = 1,r = sum + n;
+    while(l <= r)
+    {
+        ll mid = (l + r) / 2;
+        if(judge(mid))
+        {
+            r = mid - 1;
+            res = mid;
+        }
+        else
+            l = mid + 1;
+    }
+    cout<<res<<endl;
+    return 0;
+}

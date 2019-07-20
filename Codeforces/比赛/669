@@ -1,0 +1,158 @@
+C
+/*突破点是数据量很小，可以暴力解决
+注意行和列在矩阵里的对应
+找好交换前后对应的元素
+注意遍历的是行还是列
+检查一定通过输出验证
+*/
+#include<bits/stdc++.h>
+using namespace std;
+const int maxn = 110;
+struct node
+{
+    int q,r,c,v;
+}nod[10010];
+int mp[maxn][maxn];
+int main()
+{
+    int n,m,q;
+    cin>>n>>m>>q;
+    for(int i = q; i; i--)
+    {
+        cin>>nod[i].q;
+        if(nod[i].q == 1)
+        {
+            cin>>nod[i].r;
+        }
+        else if(nod[i].q == 2)
+        {
+            cin>>nod[i].c;
+        }
+        else
+        {
+            cin>>nod[i].r>>nod[i].c>>nod[i].v;
+        }
+    }
+    for(int i = 1; i <= q; i++)
+    {
+        if(nod[i].q == 1)
+        {
+            int r = nod[i].r;
+            int x = mp[r][m];
+            for(int j = m; j > 1; j--)
+            {
+                mp[r][j] = mp[r][j - 1];
+            }
+            mp[r][1] = x;
+        }
+        else if(nod[i].q == 2)
+        {
+            int c = nod[i].c;
+            int x = mp[n][c];
+            for(int j = n; j > 1; j--)
+            {
+                mp[j][c] = mp[j - 1][c];
+            }
+            mp[1][c] = x;
+        }
+        else
+        {
+            int r = nod[i].r;
+            int c = nod[i].c;
+            mp[r][c] = nod[i].v;
+        }
+//         for(int i = 1; i <= n; i++)
+//    {
+//        for(int j = 1; j <= m; j++)
+//        {
+//            if(j == 1)
+//                printf("%d",mp[i][j]);
+//            else
+//                printf(" %d",mp[i][j]);
+//        }
+//        printf("\n");
+//    }
+    }
+    for(int i = 1; i <= n; i++)
+    {
+        for(int j = 1; j <= m; j++)
+        {
+            if(j == 1)
+                printf("%d",mp[i][j]);
+            else
+                printf(" %d",mp[i][j]);
+        }
+        printf("\n");
+    }
+    return 0;
+}
+D
+/*
+每次交换的是相邻的两个，不是1和2
+scanf超时一记
+*/
+#include<bits/stdc++.h>
+using namespace std;
+const int maxn = 1e6 + 10;
+int res[maxn];
+int main()
+{
+    int n,q;
+    cin>>n>>q;
+    int a = 1,b = 2;
+    while(q--)
+    {
+        int cm;
+        scanf("%d",&cm);
+        if(cm == 1)
+        {
+            int step;
+            scanf("%d",&step);
+            a = (a + step + n) % n;
+            if(a == 0)a = n;
+            b = (b + step + n) % n;
+            if(b == 0)b = n;
+        }
+        else
+        {
+
+            if(a % 2)a++;
+            else a--;
+            if(b % 2)b++;
+            else b--;
+        }
+    }
+    if(a == 0)a = n;
+    if(b == 0)b = n;
+    //printf("%d %d\n",a,b);
+    res[a] = 1;
+    res[b] = 2;
+    int tmp = 1,ans = 1;
+    while(tmp < n / 2)
+    {
+        a = (a + 2) % n;
+        if(a == 0)
+            a = n;
+        tmp++;
+        ans += 2;
+        res[a] = ans;
+       // printf("%d\n",ans);
+    }
+    tmp = 1;ans = 2;
+    while(tmp < n / 2)
+    {
+        b = (b + 2) % n;
+        if(b == 0)
+            b = n;
+        tmp++;
+        ans += 2;
+        res[b] = ans;
+    }
+    for(int i = 1; i <= n; i++)
+    {
+        if(i == 1)printf("%d",res[i]);
+        else printf(" %d",res[i]);
+    }
+    printf("\n");
+    return 0;
+}

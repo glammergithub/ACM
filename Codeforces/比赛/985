@@ -1,0 +1,54 @@
+D Sand Fortress
+题意：将n分成a1,a2...问能否分成的序列满足a1>=H,an=1，|ai-ai+1|<=1，求最小的分成的个数k
+分析：将k二分，将每一个ai看成一个矩形，看是否满足组成的面积大于等于n。中间需要根据k的奇偶性讨论。
+有三种情况，一种就是k<=H，是从左到右一直递减，k>H时就需要判断奇偶性了，按照公式加起来就好。
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+ll n,H;
+ll abss(ll x,ll y)
+{
+    return x > y?x - y:y - x;
+}
+
+ll sum(ll a,ll b)
+{
+    return (a + b) * (abss(b,a) + 1) / 2;
+}
+ll judge(ll x)
+{
+    ll areas;
+    if(x <= H)
+        areas = sum(1,x);
+    else
+    {
+        areas = sum(1,H - 1);
+        x -= H;
+        if(x % 2 == 1)
+            areas = areas + sum(H,H + x / 2) + sum(H + x / 2,H);
+        else
+            areas = areas + sum(H,H + x / 2) + sum(H + x / 2 - 1,H);
+    }
+    return areas >= n;
+}
+int main()
+{
+
+    cin>>n>>H;
+    ll l = 1LL,r = 2 * sqrt(n) + 1,pos;
+    while(l <= r)
+    {
+        ll mid = (l + r) / 2;
+        if(judge(mid))
+        {
+            r = mid - 1;
+            pos = mid;
+        }
+        else
+        {
+            l = mid + 1;
+        }
+    }
+    cout<<pos<<endl;
+    return 0;
+}

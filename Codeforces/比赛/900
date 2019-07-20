@@ -1,0 +1,43 @@
+/*A水题 1A*/
+#include<cstdio>
+using namespace std;
+int main()
+{
+    int n;
+    scanf("%d",&n);
+    int cnt1 = 0, cnt2 = 0;
+    for(int i = 0; i < n; i++)
+    {
+        int x,y;
+        scanf("%d%d",&x,&y);
+        if(x > 0)cnt1++;
+        if(x < 0)cnt2++;
+    }
+   // printf("%d %d\n",cnt1,cnt2);
+    if(cnt1 >= n - 1 || cnt2 >= n - 1)printf("Yes\n");
+    else printf("No\n");
+    return 0;
+}
+/*B本质是除法的运算，由于余数一定不会超过除数所以最多1e5个余数就结束了，除法的写法还不熟练...*/
+#include<cstdio>
+#include<iostream>
+using namespace std;
+int main()
+{
+    int a,b,c,flag = 1;
+    scanf("%d%d%d",&a,&b,&c);
+    for(int i = 1; i < 1e5 + 10; i++)
+    {
+        a *= 10;
+        if(a / b == c)
+        {
+            flag = 0;
+            cout<<i<<endl;
+            break;
+        }
+        a %= b;
+    }
+    if(flag)
+    cout<<"-1"<<endl;
+    return 0;
+}

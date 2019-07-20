@@ -1,0 +1,107 @@
+A
+题意：这道题有了思路就很简单，给了一个含有'(',')','?'的字符串序列，可以将其中的'?'改为'(',')'问有多少种符合的匹配方式，一个匹配就是'('')''(())'类似的
+思路就是分别从左边、从右边枚举，从左边遇到'(','?',就temp++，否则就temp--，目的是将这一部分全都变成'(',记录一下符合的位置，同理,从右边遇到')','?'就temp++
+这样在一段vis[i][j] = 2的区间中'(' + '?' >= ')',')' + '?' >= '(','(' = ')'而且区间长度要为偶数就行了。
+#include<cstdio>
+#include<algorithm>
+#include<cstring>
+#include<cmath>
+using namespace std;
+const int maxn = 5010;
+const long long INFLL = 0x3f3f3f3f3f3f3f3fLL;
+typedef long long ll;
+int vis[maxn][maxn];
+int main()
+{
+    char s[5010];
+    scanf("%s",s);
+    int len = strlen(s);
+    memset(vis,0,sizeof(vis));
+    for(int i = 0; i < len; i++)
+    {
+        int temp = 0;
+        for(int j = i; j < len; j++)
+        {
+            if(s[j] == '(' || s[j] == '?')
+                temp++;
+            else
+                temp--;
+            if(temp >= 0)vis[i][j]++;
+            else break;
+        }
+    }
+    for(int i = len - 1; i >= 0; i--)
+    {
+        int temp = 0;
+        for(int j = i; j >= 0; j--)
+        {
+            if(s[j] == ')' || s[j] == '?')
+                temp++;
+            else
+                temp--;
+            if(temp >= 0)vis[j][i]++;
+            else break;
+        }
+    }
+    int ans = 0;
+    for(int i = 0; i < len; i++)
+    {
+        for(int j = 0; j < len; j++)
+        {
+            if(vis[i][j] == 2 && ((i + j) % 2))
+                ans++;
+        }
+    }
+    printf("%d\n",ans);
+    return 0;
+}
+
+B 这道题题意就是给了一个无环的有向图，问两个人在不同的位置，一个人先走，另外一个人后走，保证最佳策略谁能赢
+这道题用dp记忆化搜索返回找到枚举所有的情况找到先手能不能赢就行。dp[i][j][k]表示当前局第一个人在i这个点，第二个人在j这个点,第一个人走'a'+k字母（权值如果存在）
+先手赢就是1输就是0，状态转移为dp[j][i->x][k]就是轮到下一步，i走了一步，j作为先手看能不能赢，如果输了就是之前的先手赢，边界为26，如果都找不到就是0并记忆
+#include<cstdio>
+#include<algorithm>
+#include<cstring>
+#include<cmath>
+#include<vector>
+using namespace std;
+const int maxn = 5010;
+const long long INFLL = 0x3f3f3f3f3f3f3f3fLL;
+typedef long long ll;
+vector<int>vec[110][30];
+int dp[110][110][30];
+int dfs(int u,int v,int z)
+{
+    if(dp[u][v][z] != -1)return dp[u][v][z];
+    if(z == 26)return dp[u][v][z] = 0;
+    if(dfs(u,v,z + 1))return dp[u][v][z] = 1;
+    for(int i = 0; i < vec[u][z].size(); i++)
+    {
+        if(!dfs(v,vec[u][z][i],z))return dp[u][v][z] = 1;
+    }
+    return dp[u][v][z] = 0;
+}
+int main()
+{
+    int n,m;
+    scanf("%d%d",&n,&m);
+    while(m--)
+    {
+
+        int a,b;char c;
+        scanf("%d%d%c%c",&a,&b,&c,&c);
+        vec[a][c - 'a'].push_back(b);
+    }
+    memset(dp,-1,sizeof(dp));
+    for(int i = 1; i <= n; i++)
+    {
+        for(int j = 1; j <= n; j++)
+            {
+                if(dfs(i,j,0))printf("A");
+                else printf("B");
+            }
+            printf("\n");
+    }
+
+    return 0;
+}

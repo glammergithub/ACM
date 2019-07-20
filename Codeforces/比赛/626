@@ -1,0 +1,69 @@
+
+C二分查找
+#include<cstdio>
+#include<iostream>
+using namespace std;
+int n,m;
+bool judge(int mid)
+{
+    if(n <= mid / 2 && m <= mid / 3 && (mid / 2 + mid / 3 - mid / 6 >= n + m))
+        return 1;
+    else
+        return 0;
+}
+int main()
+{
+    cin>>n>>m;
+    int l = 1,r = 3000000,pos;
+    while(l <= r)
+    {
+        int mid = (l + r) / 2;
+        if(judge(mid))
+        {
+            pos = mid;
+            r = mid - 1;
+        }
+        else
+        {
+            l = mid + 1;
+        }
+    }
+    cout<<pos<<endl;
+    return 0;
+}
+
+有n个球标上了号，每次A和J同时从n个球中各抽取一个，并且要求前两场A赢后一场J赢，A前两场的抽取的球的标号和小于J的，问概率是多少。首先把球的标号排序，方便
+记录球标号差，然后记录每个差的个数，再用前缀和存一下差的个数，这样枚举一下前两场A和J的差，然后第三场一定是比这两个差的和大的所有可能的差的概率，三场概率
+相乘即可
+#include<cstdio>
+#include<algorithm>
+#include<iostream>
+using namespace std;
+int a[2010],sum[5010],num[5010];
+int main()
+{
+	int n;
+	cin>>n;
+	for(int i = 1; i <= n; i++)
+	    cin>>a[i];
+	sort(a + 1,a + n + 1);
+	for(int i = 1; i <= n; i++)
+	    for(int j = i + 1; j <= n; j++)
+	    {
+	    	num[a[j] - a[i]]++;
+		}
+	for(int i = 1; i <= 5000; i++)
+	   sum[i] = sum[i - 1] + num[i];
+	double all = n * (n - 1) / 2;
+    double ans = 0.0;
+	for(int i = 1; i <= 5000; i++)
+	    for(int j = 1; j <= 5000; j++)
+	    {
+	    	if(i + j < 5000)
+	    	  {
+	    	  	  ans += 1.0 * num[i] / all * 1.0 * num[j] / all * 1.0 * (sum[5000] - sum[i + j]) / all;
+			  }
+		}
+	printf("%.10f\n",ans);
+	return 0;
+}
