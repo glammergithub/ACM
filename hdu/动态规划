@@ -1,0 +1,361 @@
+hdu1231
+#include<cstdio>
+#include<cstring>
+#include<algorithm>
+using namespace std;
+const int maxn = 10010;
+const int INF = 0x3f3f3f3f;
+int a[maxn],dp[maxn];
+int main()
+{
+    int k,maxx;
+    while(~scanf("%d",&k) && k)
+    {
+        for(int i = 1; i <= k; i++)
+            scanf("%d",&a[i]);
+        memset(dp,0,sizeof(dp));
+        maxx = -INF;
+        int flag = 0;
+        for(int i = 1; i <= k; i++)
+        {
+            dp[i] = max(dp[i - 1] + a[i],a[i]);
+            if(dp[i] >= 0)
+                flag = 1;
+            maxx = max(maxx,dp[i]);
+        }
+        if(!flag)printf("0 %d %d\n",a[1],a[k]);
+        else
+        {
+            int maxi;
+            for(int i = 1; i <= k; i++)
+            {
+                if(dp[i] == maxx)
+                {
+                    maxi = i;
+                    break;
+                }
+            }
+            int sum = 0,mini;
+            for(int i = maxi; i >= 1; i--)
+            {
+                sum += a[i];
+                if(sum == maxx)
+                {
+                    mini = i;
+                }
+            }
+            printf("%d %d %d\n",maxx,a[mini],a[maxi]);
+        }
+    }
+    return 0;
+}
+
+hdu 1087 Super Jumping! Jumping! Jumping!
+#include<cstdio>
+#include<iostream>
+#include<cstring>
+#include<algorithm>
+#define maxn 1010
+using namespace std;
+typedef long long ll;
+int main()
+{
+    int n;
+    ll a[maxn],dp[maxn];
+    while(scanf("%d",&n) && n != 0)
+    {
+        for(int i = 0; i <= n; i++)
+            dp[i] = 0;
+        for(int i = 1; i <= n; i++)
+            cin>>a[i];
+        ll max1 = 0;
+        for(int i = 1; i <= n; i++)
+        {
+            dp[i] = a[i];
+            for(int j = 1; j < i; j++)
+            {
+                if(a[i] > a[j])
+                {
+                    dp[i] = max(dp[j] + a[i], dp[i]);//这里是在原先已更新的基础上换而不是与a[i]相比
+                }
+            }
+             max1 = max(dp[i],max1);
+        }
+        cout<<max1<<endl;
+    }
+    return 0;
+}
+
+hdu 1011 树形DP
+#include <iostream>
+#include<cstdio>
+#include<algorithm>
+#include<cmath>
+#include<vector>
+#include<stdlib.h>
+#include<cstring>
+using namespace std;
+int cost[110],p[110];
+int dp[110][110],vis[110];//dp一个是房间位置一个是人数，内容是概率
+vector<int>vec[110];
+int n,m;
+void dfs(int x)//树形dp
+{
+    int temp = (cost[x] + 19) / 20;//每个房间需要的人
+    for(int i = temp; i <= m; i++)
+        dp[x][i] = p[x];
+    vis[x] = 1;
+    for(int i = 0; i < vec[x].size(); i++)//这一步笔误啦，看了好半天
+    {
+        int t = vec[x][i];//从下一个节点开始找
+        if(vis[t])continue;
+        dfs(t);//找到最末端为止
+        for(int j = m; j >= temp; j--)
+            for(int k = 1; k <= j - temp; k++)
+                dp[x][j] = max(dp[x][j],dp[x][j - k] + dp[t][k]);//dp注意之所以最外层是倒序是因为之前dp完成的可以在之后进行比较
+    }
+}
+int main()
+{
+    while(~scanf("%d%d",&n,&m))
+    {
+        if(n == -1 && m == -1)break;
+        for(int i = 0; i <= n; i++)//注意更新
+            vec[i].clear();
+        memset(dp,0,sizeof(dp));
+        memset(vis,0,sizeof(vis));
+        for(int i = 1; i <= n; i++)
+        {
+            scanf("%d%d",&cost[i],&p[i]);
+        }
+        for(int i = 1; i <= n - 1; i++)
+        {
+            int x,y;
+            scanf("%d%d",&x,&y);
+            vec[x].push_back(y);
+            vec[y].push_back(x);
+        }
+        if(m == 0)
+        {
+            printf("0\n");
+            continue;
+        }
+        dfs(1);
+        printf("%d\n",dp[1][m]);
+    }
+}
+
+hdu1024
+找到一列数中不交叉的m组数，使得它们的和最大，求出这个和
+看成二维矩阵，行为分成的组数，列为到这个数列的第i个数，dp[i][j]代表前j个数分成i组的最大的和,第j个数可以属于第i组，也可以属于第i-1组，通过滚动数组可以实现
+两个数组now，pre，分别存当前组的最大的值和上一个组的最大的值，更新即可，注意longlong要把所有的位置（包括输入都给改了QWQ）
+#include<cstdio>
+#include<algorithm>
+#include<cstring>
+using namespace std;
+typedef long long ll;
+ll a[1000010],now[1000010],pre[1000010];
+const long long INF = 1e10;
+int main()
+{
+    int n,m;
+    while(scanf("%d%d",&m,&n) == 2)
+    {
+        memset(now,0,sizeof(now));
+        memset(pre,0,sizeof(pre));
+        for(int i = 1; i <= n; i++)
+            scanf("%lld",&a[i]);
+        ll maxx;
+        for(int i = 1; i <= m; i++)
+        {
+            maxx = -INF;
+            for(int j = i; j <= n; j++)
+            {
+                now[j] = max(now[j - 1] + a[j],pre[j - 1] + a[j]);
+                pre[j - 1] = maxx;
+                if(now[j] > maxx)maxx = now[j];
+            }
+        }
+        printf("%lld\n",maxx);
+    }
+   // printf("%lld\n",INF);
+    return 0;
+}
+
+1028//将一个数划分为两个数的和的不同情况的个数，就是从+1，+2...一直开始划分，更新
+#include<cstdio>
+#include<algorithm>
+#include<cstring>
+using namespace std;
+int main()
+{
+    int n;
+    int dp[130];
+    memset(dp,0,sizeof(dp));
+      dp[0] = 1;
+    for(int i = 1; i < 122; i++)
+        {
+            for(int j = i; j < 122; j++)
+                dp[j] += dp[j - i];
+        }
+    while(~scanf("%d",&n))
+    {
+        printf("%d\n",dp[n]);
+    }
+    return 0;
+}
+
+hdu5773//题意：给了一个含许多个0的数列，0可以改成任何的值，问改完之后的序列的最长上升子序列的长度。因为0可以变成任何数，所以将0全部利用，但是为了保证
+//利用后的数列是单调递增的需要给这些0预留出空间，所以每一个数的权值减去前面的0的个数，这里前面的数减去0之后，后面的数减去前面的0相当于为这之间的0和前面的
+//0都预留了空间
+#include<cstdio>
+#include<algorithm>
+#include<cstring>
+using namespace std;
+const int maxn = 100010;
+const int INF = 0x3f3f3f3f;
+int a[maxn],b[maxn],dp[maxn];
+int main()
+{
+    int t;
+    scanf("%d",&t);
+    int kase = 1;
+    while(t--)
+    {
+        int n;
+        scanf("%d",&n);
+        int zero = 0,j = 0;
+        for(int i = 0; i < n; i++)
+        {
+            scanf("%d",&a[i]);
+            if(a[i])
+            {
+                a[i] -= zero;
+                b[j++] = a[i];
+            }
+            else zero++;
+        }
+       memset(dp,INF,sizeof(dp));
+       int len = 0;
+       for(int i = 0; i < j; i++)
+       {
+          *lower_bound(dp,dp + j,b[i]) = b[i];
+       }
+       len = lower_bound(dp,dp + n,INF) - dp;
+       len += zero;
+       printf("Case #%d: %d\n",kase++,len);
+    }
+    return 0;
+}
+
+UVA674//题意就是给了五种硬币，对应不同的价值，每次询问一个钱数，问可以有多少种分配硬币的方式
+因为硬币数目是无限的，可以看作是完全背包问题。dp[i]表示价值为i的钱币的数目，dp[i]在原值的基础上由dp[i - cost[i]]加和转移过来。dp[0]为1
+#include<cstdio>
+using namespace std;
+const int maxn = 100010;
+int dp[maxn],cost[5] = {1,5,10,25,50};
+const int N = 7490;
+int main()
+{
+    int n;
+    dp[0] = 1;
+    for(int i = 0; i < 5; i++)
+    {
+        for(int j = cost[i]; j < N; j++)
+            dp[j] += dp[j - cost[i]];
+    }
+    while(~scanf("%d",&n))
+    {
+        printf("%d\n",dp[n]);
+    }
+    return 0;
+}
+
+POJ1882
+//完全背包 题意：http://blog.csdn.net/vmurder/article/details/39519693
+注意数组别开小了我的就是因为数组开小了结果莫名奇妙改变了原数组的值Orz...dp[i]表示价值为i的最小的使用邮票数量
+#include<cstdio>
+#include<cstring>
+#include<algorithm>
+using namespace std;
+const int maxn = 1100;
+const int INF  =0x3f3f3f3f;
+int dp[maxn],a[maxn][maxn],num[maxn];
+const int N = 7490;
+int main()
+{
+    int s;
+    while(~scanf("%d",&s) && s)
+    {
+        int n;
+        scanf("%d",&n);
+        for(int i = 0; i < n; i++)
+        {
+            scanf("%d",&num[i]);
+            for(int j = 0; j < num[i];j++)
+            {
+                scanf("%d",&a[i][j]);
+            }
+        }
+
+        int ans = 0,t = 0;
+        for(int i = 0; i < n; i++)
+        {
+
+           int maxv = s * a[i][num[i] - 1];
+           memset(dp,INF,sizeof(dp));
+           dp[0] = 0;
+           for(int j = 0; j < num[i]; j++)
+           {
+               for(int k = a[i][j]; k <= maxv; k++)
+               {
+                   dp[k] = min(dp[k],dp[k - a[i][j]] + 1);
+               }
+           }
+//           for(int j = 0; j < num[i]; j++)
+//             printf("%d ",a[i][j]);
+//           printf("\n");
+//           for(int j = 0; j <= maxv; j++)
+//               printf("%d ",dp[j]);
+          // printf("\n");
+           int temp;
+           for(int j = 1; j <= maxv; j++)
+           {
+               if(dp[j] > s)
+               {
+                   temp = j - 1;
+                   break;
+               }
+               else if(j == maxv)
+                temp = maxv;
+           }
+           if(temp > ans)
+           {
+              ans = temp;
+              t = i;
+           }
+            else if(ans == temp)
+            {
+                if(num[i] < num[t])
+                    t = i;
+                else if(num[i] == num[t])
+                {
+                    if(a[i][num[i] - 1] < a[t][num[t] - 1])
+                        t = i;
+                }
+            }
+           // printf("%d\n",t);
+//            for(int j = 0; j < num[t]; j++)
+//                printf("%d ",a[i][j]);
+//            printf("\n");
+        }
+       // printf("%d\n",num[t]);
+        printf("max coverage = %d :",ans);
+        for(int j = 0; j < num[t]; j++)
+        {
+            printf(" %d",a[t][j]);
+        }
+        printf("\n");
+    }
+    return 0;
+}

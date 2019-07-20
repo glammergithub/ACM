@@ -1,0 +1,243 @@
+hdu1015
+#include<cstdio>
+#include<algorithm>
+#include<cstring>
+using namespace std;
+typedef long long ll;
+ll target;
+int len,ans;
+int element[6];
+char s[15];
+bool used[15];
+int pow(int x,int y)
+{
+    int res = 1;
+    for(int i = 1; i <= y; i++)
+        res *= x;
+    return res;
+}
+int dfs(int x)
+{
+    element[ans++] = s[x] -'A' + 1;
+    if(ans == 5)
+    {
+        ll sum = 0;
+        for(int i = 0; i < 5; i++)
+        {
+            if(i%2)
+                sum -= (long long )pow(element[i], i + 1);
+            else
+                sum += (long long)pow(element[i], i + 1);
+        }
+        return sum == target;
+    }
+    for(int i = len - 1; i >= 0 ; i--)
+    {
+        if( !used[i])
+        {
+            used[i] = 1;
+            if(dfs(i))
+            {
+                return 1;
+            }
+            else
+            {
+                used[i] = 0;
+                ans--;
+            }
+        }
+    }
+    return 0;
+}
+int main()
+{
+    int mark;
+    while(scanf("%I64d",&target) && target )
+    {
+        mark = 0;
+        ans = 0;
+        memset(used, 0,sizeof(used));
+        getchar();
+        scanf("%s",s);
+        len = strlen(s);
+        sort(s,s + len);
+        for(int i = len - 1; i >= 0; i--)
+        {
+            used[i] = 1;
+            if(dfs(i))
+            {
+                mark = 1;
+                break;
+            }
+            ans = 0;//±ðÍüÁË¸üÐÂ
+            used[i] = 0;
+        }
+        if(mark)
+        {
+            for(int i = 0; i < 5; i++)
+                printf("%c",element[i] + 'A' - 1);
+            printf("\n");
+        }
+        else
+            printf("no solution\n");
+    }
+    return 0;
+}
+
+hdu 6228
+The 2017 ACM-ICPC Asia Shenyang 
+L - Tree 
+题意是让你在给一棵树的节点染色，每一个集合表示包含染上相同颜色的所有点的最小边，问所有的集合取交后的最多节点的大小。
+公共集合里的点都是能够满足它的两侧均有至少k个不同的颜色，这样才可以取交集，问有多少个这样的点。
+dfs模板：找到一个集合里每个点的子节点（包含它自己）的节点数
+#include<cstdio>
+#include<vector>
+#include<cstring>
+using namespace std;
+const int MAXN = 200010;
+vector<int>vec[MAXN];
+int s[MAXN];
+int ans,k,n;
+int dfs(int u,int pre)
+{
+    s[u] = 1;
+    for(int i = 0; i < vec[u].size(); i++)
+    {
+        int v = vec[u][i];
+        if(v == pre)continue;
+        dfs(v,u);
+        s[u] += s[v];
+        if(s[v] >= k && n - s[v] >= k)
+            ans++;
+    }
+}
+int main()
+{
+    int t;
+    scanf("%d",&t);
+    while(t--)
+    {
+        memset(s,0,sizeof(s));
+        for(int i = 0; i < MAXN; i++)
+            vec[i].clear();
+        scanf("%d%d",&n,&k);
+        for(int i = 0; i < n - 1; i++)
+        {
+            int a,b;
+            scanf("%d%d",&a,&b);
+            vec[a].push_back(b);
+            vec[b].push_back(a);
+        }
+        ans = 0;
+        dfs(1,-1);
+        printf("%d\n",ans);
+    }
+    return 0;
+}
+
+BFShdu 1026
+flag数组存当前位置的上一个方向，注意加一个因为防止和0重复print的时候遇到0结束。
+fight数组存放当前位置的打斗的时间
+node节点按照时间从小到大的顺序存到优先队列中，每次弹出时间最短的那一个
+广度搜索
+每次搜索四个方向，先把头节点放到优先队列中。然后在优先队列不为空的前提下，建立一个当前节点存放时间最短的节点，把最短时间节点弹出，如果当前节点
+的位置就是到达的位置的时候，记录总时间，返回1。然后看下一个位置是否在范围内，是否为‘X’，如果在的话，开辟一个节点存放下一个位置，如果遇到的不是‘。’下
+一个节点的时间就是当前节点的时间+1+这个图上的数值，这个位置fight的时间也为这个数。遇到的是‘。’的话就下一个节点的时间就是当前节点的时间+1。然后把这
+个节点压到队列里，用flag数组记录一下这个节点的位置的上一个方向（注意加上1为了不与方向中的0重复），下一个节点赋值成‘X’，不能走。
+打印路径
+从目标位置倒着往回找，通过flag数组找到这个位置的上一个方向，注意之前加的1需要减去，然后遇到0，0的位置返回，一层一层输出prex，prey，x，y，
+
+#include<cstdio>
+#include<queue>
+#include<cstring>
+using namespace std;
+char mp[110][110];
+int dir[4][2] = {0, 1,0 ,-1, 1, 0, -1, 0};
+int n,m;
+int fight[110][110],flag[110][110];
+int tottime = 0;
+struct node
+{
+    int x;
+    int y;
+    int time;
+    bool operator<(const node &a)const
+    {
+        return a.time < time;
+    }
+};
+
+bool bfs()
+{
+   struct node start;
+   start.time = start.x = start.y = 0;
+   priority_queue<node>pq;
+   pq.push(start);
+   mp[0][0] = 'X';
+   while(!pq.empty())
+   {
+       struct node cur = pq.top();
+       pq.pop();
+       if(cur.x == n - 1 && cur.y == m - 1)
+       {
+           tottime = cur.time;
+           return 1;
+       }
+       for(int i = 0 ;i < 4; i++)
+       {
+           int xtmp = cur.x + dir[i][0];
+           int ytmp = cur.y + dir[i][1];
+           if(mp[xtmp][ytmp] == 'X')continue;
+           if(xtmp >= 0 && xtmp < n && ytmp >= 0 && ytmp < m)
+           {
+               struct node next;
+               next.x = xtmp;
+               next.y = ytmp;
+               if(mp[xtmp][ytmp] != '.')
+               {
+                   next.time = cur.time + 1 + mp[xtmp][ytmp] - '0';
+                   fight[next.x][next.y] = mp[xtmp][ytmp] - '0';
+               }
+               else
+               next.time = cur.time + 1;
+               pq.push(next);
+               flag[next.x][next.y] = i + 1;
+               mp[xtmp][ytmp] = 'X';
+           }
+       }
+   }
+   return 0;
+}
+int seconds;
+void print(int x,int y)
+{
+    if(flag[x][y] == 0)return;
+    int prex,prey;
+    prex = x - dir[flag[x][y] - 1][0];
+    prey = y - dir[flag[x][y] - 1][1];
+    print(prex,prey);
+    printf("%ds:(%d,%d)->(%d,%d)\n",seconds++,prex,prey,x,y);
+    while(fight[x][y]--)
+    {
+        printf("%ds:FIGHT AT (%d,%d)\n",seconds++,x,y);
+    }
+}
+int main()
+{
+    while(~scanf("%d%d",&n,&m))
+    {
+        memset(flag,0,sizeof(flag));
+        memset(fight,0,sizeof(fight));
+        for(int i = 0; i < n; i++)
+            scanf("%s",mp[i]);
+        if(bfs())
+        {
+            printf("It takes %d seconds to reach the target position, let me show you the way.\n",tottime);
+            seconds = 1;
+            print(n - 1,m - 1);
+        }
+        else printf("God please help our poor hero.\n");
+        printf("FINISH\n");
+    }
+    return 0;
+}

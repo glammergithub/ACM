@@ -1,0 +1,42 @@
+hdu1257//题意就是每次来一个导弹，拦截系统拦截，但是拦截系统发出的导弹高度是依次递减的，问最少需要多少个拦截导弹
+//LIS没有想明白，用贪心做的，就是一个数组维护每个系统的最小能拦截导弹的高度，如果之后的导弹还能拦截就更新这个最小值，所有的都不能拦截了再增加一个
+#include<cstdio>
+using namespace std;
+const int maxn = 100010;
+int a[maxn],b[maxn];
+int main()
+{
+    int n;
+    while(~scanf("%d",&n))
+    {
+        int k = 0;
+        for(int i = 0; i < n; i++)
+        {
+            scanf("%d",&a[i]);
+            if(i == 0)
+            {
+                b[0] = a[0];
+                continue;
+            }
+            for(int j = 0; j <= k; j++)
+            {
+                if(a[i] <= b[j])
+                {
+                    b[j] = a[i];
+                    break;
+                }
+                else
+                {
+                    if(j == k)
+                    {
+                        k++;
+                        b[k] = a[i];
+                        break;
+                    }
+                }
+            }
+        }
+        printf("%d\n",k + 1);
+    }
+    return 0;
+}

@@ -1,0 +1,32 @@
+1020/*就是找连续的字符有多少个，while就行，但是注意末尾处理，还有看清长度范围*/
+#include <iostream>
+#include<cstdio>
+#include<algorithm>
+#include<cmath>
+#include<vector>
+#include<stdlib.h>
+#include<cstring>
+using namespace std;
+typedef long long ll;
+int main()
+{
+    int n;
+    scanf("%d",&n);
+    while(n--)
+    {
+        char s[10010];
+        scanf("%s",s);
+        int flag;
+        for(int i = 0; i < strlen(s);i = flag)
+        {
+            flag = i;
+            while(flag + 1 < strlen(s) && s[flag + 1] == s[flag])
+                flag++;
+               if(flag != i)printf("%d%c",flag - i + 1,s[i]);
+               else printf("%c",s[i]);
+               flag++;
+        }
+        printf("\n");
+    }
+    return 0;
+}

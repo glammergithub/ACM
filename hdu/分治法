@@ -1,0 +1,62 @@
+1007
+分治法求最近点对
+#include <iostream>
+#include<cstdio>
+#include<algorithm>
+#include<cmath>
+#include<stdlib.h>
+using namespace std;
+struct node
+{
+   double x;
+   double y;
+}p[100010];
+int n;
+int a[100010];
+double cmpx(node a, node b)
+{
+   return a.x < b.x;
+}
+double cmpy(int a,int b)
+{
+   return p[a].y < p[b].y;
+}
+double dis(node a, node b)
+{
+   return sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
+}
+double findd(int l, int r)
+{
+   if(r == l + 1)return dis(p[l],p[r]);
+   else if(r == l + 2)return min(min(dis(p[l],p[r]),dis(p[l + 1],p[r])),dis(p[l],p[l + 1]));
+   int mid = (l + r) / 2;
+   double ans = min(findd(l, mid),findd(mid + 1,r));
+   int cnt = 0;
+   for(int i = l; i <= r; i++)//在范围内找，这样的话只要找到有没有横跨中点两边的数距离更小，一开始直接遍历n超时了
+   {
+       if(p[mid].x - ans <= p[i].x && p[mid].x + ans >= p[i].x)//注意比较大小
+          a[cnt++] = i;
+   }
+   sort(a, a + cnt, cmpy);//注意是将这些在中点更新最小值两边的点放在集合里重新
+   for(int i = 0; i < cnt; i++)
+      for(int j = i + 1; j < cnt; j++)
+         {
+            if(p[a[j]].y - p[a[i]].y >= ans)break;
+            ans = min(dis(p[a[i]],p[a[j]]),ans);
+         }
+    return ans;
+}
+int main()
+{
+    while(scanf("%d",&n) == 1)
+    {
+        if(n == 0)break;
+       for(int i = 0; i < n; i++)
+          scanf("%lf%lf",&p[i].x,&p[i].y);
+       sort(p,p + n,cmpx);
+       printf("%.2f\n",findd(0,n - 1) / 2.0);
+    }
+    //system("pause");
+    //cout<<"he;llo,world"<<endl;
+    return 0;
+}
