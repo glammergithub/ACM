@@ -1,0 +1,57 @@
+#include<cstdio>
+#include<iostream>
+#define maxn 2010
+using namespace std;
+char s[maxn],t[maxn];
+int n;
+int main()
+{
+    int a,b,left;
+    cin>>n;
+    getchar();
+    for(int i = 0; i < n; i++)
+    {
+        scanf("%c",&s[i]);
+        getchar();
+    }
+    a = 0;
+    b = n - 1;
+    int j = 0;
+    while(a <= b)
+    {
+        int left = 0;
+       for(int i = 0; a + i <= b; i++)
+    {
+        if(s[a + i] < s[b - i])
+        {
+            left = 1;
+            break;
+        }
+        else if(s[a + i] > s[b - i])
+        {
+            left = 0;
+            break;
+        }
+    }
+    if(left)
+    t[j++] = s[a++];
+    else
+    t[j++] = s[b--];
+    }
+    t[n] = '\0';
+    if(n <= 80)
+    printf("%s\n",t);
+    else
+    {
+        for(int i = 0; i < n/80; i++)
+        {
+            for(int k = 0; k < 80; k++)
+            printf("%c",t[i * 80 + k]);
+            printf("\n");
+        }
+        for(int i = (n/80) * 80; i < n; i++)
+            printf("%c",t[i]);
+        printf("\n");
+    }
+    return 0;
+}
