@@ -1,0 +1,29 @@
+#include<cstdio>
+#include<algorithm>
+#include<iostream>
+using namespace std;
+int a[1010];
+int main()
+{
+    int r,n,t,res;
+    res = 0;
+    while(scanf("%d%d",&r,&n)==2)
+    {
+        res = 0;
+        if(r == -1 && n == -1)break;
+        for(int i = 0; i < n; i++)
+            scanf("%d",&a[i]);
+        sort(a,a + n);
+        t = 0;
+        while(t < n)
+        {
+            int s = a[t];
+            while(t < n && a[t] <= s + r) t++;
+            int m = a[t - 1];
+            while(t < n && a[t] <= m + r) t++;
+            res++;
+        }
+        cout<<res<<endl;
+    }
+    return 0;
+}
