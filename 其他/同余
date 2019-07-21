@@ -1,0 +1,16 @@
+https://baike.baidu.com/item/%E5%90%8C%E4%BD%99%E5%BC%8F/6024642?fr=aladdin
+运算性质：
+如果a≡b(mod m)，x≡y(mod m)，则a+x≡b+y(mod m)
+如果a≡b(mod m)，x≡y(mod m)，则ax≡by(mod m)
+如果ac≡bc(mod m)，且c和m互质，则a≡b(mod m)
+1.a=b+km(k∈Z)；
+2.a和b被m除时有相同的余数
+(1)同余式可以逐项相加
+(2)同余式一边的数可以移到另一边，只要改变符号就可以了
+(3)同余式的每一边都可以增加或减去模的任意倍数
+(4)同余式可以逐项相乘
+(6)同余式两边的数如有公约数，此公约数又和模互素，那么就可以把两边的数除以这个公约数
+(7)同余式两边的数和模可以同时乘上一个整数
+
+中国剩余定理
+https://www.cnblogs.com/MashiroSky/p/5918158.html
