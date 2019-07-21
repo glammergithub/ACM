@@ -1,0 +1,273 @@
+http://blog.csdn.net/luomingjun12315/article/details/45555495
+http://blog.csdn.net/luomingjun12315/article/details/45479073
+推理博弈
+从不同堆石子里取，如果上一个人没有取完，必须继续取，问谁最后取完所有的石子
+分成两类，一类是全是1，此时看奇数还是偶数就行
+另一类是有大于1的，先手可以操作一下，看成是取完1次变成1还是直接取完
+#include<cmath>
+#include<cstdio>
+#include<iostream>
+using namespace std;
+const int N = 20010;
+int a[N],n;
+int solve()
+{
+int flag = 0;
+for (int i = 0; i < n; i++)
+{
+if (a[i] > 1)
+flag = 1;
+}
+if (flag || n & 1)
+return 1;
+return 0;
+}
+int main()
+{
+int t;
+cin >> t;
+while (t--)
+{
+cin >> n;
+for (int i = 0; i < n; i++)
+cin >> a[i];
+if (solve())
+cout << "poopi" << endl;
+else
+cout << "piloop" << endl;
+}
+//system("pause");
+return 0;
+}*/
+/*B 
+SG函数值代表最终结束状态，每一个SG函数值代表从一堆里取值的结果，打表发现奇数的都是它一半的sg值，偶数就是它的一半
+此题为尼姆博弈，需要将不同的sg值，就是该局状态异或。
+#include<cmath>
+#include<cstdio>
+#include<iostream>
+using namespace std;
+typedef long long ll;
+void getSG(int n)
+{
+	int i, j;
+	memset(SG, 0, sizeof(SG));
+	SG[1] = 0;
+	SG[2] = 1;
+	for (i = 3; i <= n; i++)
+	{
+		memset(S, 0, sizeof(S));
+		for (j = 1; j <= i / 2; j++)
+			S[SG[i-j]] = 1;//符合的数量才行
+		for (j = 0; j <= n; j++)
+		if (!S[j])
+		{
+			SG[i] = j;
+			break;
+		}
+	};
+	for (int i = 1; i <= n; i++)
+		cout << i << ":" << SG[i] << endl;
+}
+ll gs(ll a)
+{
+if (a & 1)return gs(a / 2);
+return a / 2;
+}
+int main()
+{
+int t;
+cin >> t;
+while (t--)
+{
+int n;
+cin >> n;
+ll ans = 0;
+while (n--)
+{
+ll x;
+cin >> x;
+ans ^= gs(x);
+}
+if (ans)printf("YES\n");
+else printf("NO\n");
+}
+//	system("pause");
+}
+*/
+题意就是有两堆石子，每次取走较小的那一堆石子，直到无法取石子为止，问最后谁能嬴
+SG定理打表，就是每次的n都在大于它一半到n-1的数量内，找到sg为0的正好为2^n-1
+#include<cstdio>
+#include<cstring>
+#include<iostream>
+using namespace std;
+const int N = 1e5;
+int f[N], SG[N], S[N];
+void getSG(int n)
+{
+	int i, j;
+	memset(SG, 0, sizeof(SG));
+	SG[1] = 0;
+	SG[2] = 1;
+	for (i = 3; i <= n; i++)
+	{
+		memset(S, 0, sizeof(S));
+		for (j = (i + 1) / 2; j < i; j++)
+			S[SG[j]] = 1;
+		for (j = 0; j <= n; j++)
+		if (!S[j])
+		{
+			SG[i] = j;
+			break;
+		}
+	};
+	for (int i = 1; i <= n; i++)
+		cout << i << ":" << SG[i] << endl;
+}
+int main()
+{
+	//getSG(n);
+	int n;
+	while (cin >> n && n)
+	{
+		n++;
+		while (n != 1)
+		{
+			if (n % 2 == 0)
+				n /= 2;
+			else
+				break;
+		}
+		if (n == 1)cout << "Bob" << endl;
+		else cout << "Alice" << endl;
+	}
+	//system("pause");
+	return 0;
+}
+UVA10561
+在一条线上有点和叉，问改什么位置的点变成叉能使得先手能赢（三个叉连在一起），一个叉旁边两个的范围内不能再放叉不然对手一定会赢，划分成不同的连续的
+点的区域，类似于不同的尼姆博弈，求sg的值，在对手的叉的落下后找到连续的区域求sg的值
+#include<cstdio>
+#include<cstring>
+#include<iostream>
+#include<algorithm>
+using namespace std;
+const int maxn = 100010;
+int sg[maxn],res[maxn],vis[maxn];
+char str[220];
+int len,way;
+bool judge()
+{
+	for (int i = 0; i < len - 2; i++)
+	{
+		if (str[i] == 'X' && str[i + 1] == 'X' && str[i + 2] == 'X')
+			return 1;
+	}
+	return 0;
+}
+void get_gs()
+{
+	memset(sg, 0, sizeof(sg));
+	sg[1] = sg[2] = sg[3] = 1;
+	for (int i = 4; i <= 200; i++)
+	{
+		memset(vis, 0, sizeof(vis));
+
+		for (int j = 1; j <= i; j++)
+		{
+			int t = 0;
+			if (i - j - 2 >= 0)
+			{
+				t ^= sg[i - j - 2];
+			}
+			if (j - 3 >= 0)
+			{
+				t ^= sg[j - 3];
+			}
+			vis[t] = 1;
+		}
+		for (int j = 0;; j++)
+		{
+			if (!vis[j])
+            {
+                sg[i] = j;
+			break;
+            }
+
+		}
+	}
+}
+int get_res()
+{
+	for (int i = 0; i < len; i++)
+	{
+		if (str[i] == '.')
+		{
+			str[i] = 'X';
+			if (judge())
+			{
+				str[i] = '.';
+				return 0;
+			}
+			str[i] = '.';
+		}
+	}
+	int num = 0,ans = 0;
+	for (int i = 0; i < len; i++)
+	{
+		if (str[i] == 'X' || (i - 1 >= 0) && str[i - 1] == 'X' || (i - 2 >= 0) && str[i - 2] == 'X' || (i + 1 < len) && str[i + 1] == 'X' || (i + 2 < len) && str[i + 2] == 'X')
+		{
+			ans ^= sg[num];
+//            if(num)
+//			cout<<num<<endl;
+			num = 0;
+		}
+		else num++;
+	}
+	//cout << num << endl;
+	ans ^= sg[num];
+	return ans == 0;
+}
+void solve()
+{
+	way = 0;
+	len = strlen(str);
+	get_gs();
+	for (int i = 0; i < len; i++)
+	{
+		if (str[i] == '.')
+		{
+			str[i] = 'X';
+			if (judge() || get_res())
+            {
+                res[++way] = i + 1;
+            }
+
+			str[i] = '.';
+		}
+	}
+
+}
+int main()
+{
+	int n;
+	cin >> n;
+	while (n--)
+	{
+		memset(res, 0, sizeof(res));
+		cin >> str;
+		solve();
+		if (way == 0)cout << "LOSING" << endl;
+		else
+		{
+			cout << "WINNING" << endl;
+			for (int i = 1; i <= way; i++)
+			{
+				if (i != 1)cout << " " << res[i];
+				else cout << res[i];
+			}
+		}
+		cout << endl;
+	}
+	//system("pause");
+	return 0;
+}

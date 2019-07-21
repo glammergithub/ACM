@@ -1,0 +1,128 @@
+//求矩阵的最大的子矩阵的和
+#include<cstdio>
+#include<algorithm>
+using namespace std;
+const int INF = 0x3f3f3f3f;
+const int N = 110;
+int mp[N][N];
+int n,MAX;
+int tmp[N];
+int dp1()
+{
+    int sum = 0,maxv = -INF;
+    for(int i = 1; i <= n; i++)
+    {
+        sum  = max(sum + tmp[i],tmp[i]);
+        maxv = max(maxv,sum);
+    }
+    return maxv;
+}
+void solve()//从第一行开始，第1行到第n行，把第1行求出最大值，第一行的所有值存起来，然后到第二行的时候就是第一行和第二行的和再求一下最大值，以此类推
+//然后是第二行到第n行..第n行到第n行
+{
+    MAX = -INF;
+    for(int i = 1; i <= n; i++)
+    {
+        for(int j = 1; j <= n; j++)
+            tmp[j] = 0;
+        for(int j = i; j <= n; j++)
+        {
+            for(int k = 1; k <= n; k++)
+                tmp[k] += mp[j][k];
+            MAX = max(MAX,dp1());
+            //printf("%d\n",MAX);
+        }
+    }
+}
+int main()
+{
+    while(~scanf("%d",&n))
+    {
+        for(int i = 1; i <= n; i++)
+            for(int j = 1; j <= n; j++)
+            {
+                scanf("%d",&mp[i][j]);
+            }
+        solve();
+        printf("%d\n",MAX);
+    }
+    return 0;
+}
+三种背包
+#include<iostream>
+#include<cstdio>
+#include<cstring>
+using namespace std;
+const int N=100000+9;
+int f[N],w[N],c[N],num[N],V,n;
+void ZeroOnePack(int C,int W)
+{
+    for(int v=V;v>=C;v--)
+        f[v]=max(f[v],f[v-C]+W);
+}
+void CompletePack(int C,int W)
+{
+    for(int v=C;v<=V;v++)
+        f[v]=max(f[v],f[v-C]+W);
+}
+int MultiplePack()
+{
+    memset(f,0,sizeof(f));
+    for(int i=1;i<=n;i++){
+        if(num[i]*c[i]>V)
+            CompletePack(c[i],w[i]);
+        else{
+            int k=1;
+            while(k<num[i]){
+                ZeroOnePack(k*c[i],k*w[i]);
+                num[i]-=k;
+                k<<=1;
+            }
+            ZeroOnePack(num[i]*c[i],num[i]*w[i]);
+        }
+    }
+    return f[V];
+}
+
+int main()
+{
+    //freopen("f.txt","r",stdin);
+    while(~scanf("%d%d",&V,&n)){
+        for(int i=1;i<=n;i++){
+            scanf("%d%d",&num[i],&c[i]);
+            w[i]=c[i];
+        }
+        printf("%d\n",MultiplePack());
+    }
+    return 0;
+}
+
+//最大公共子序列
+#include<cstdio>
+#include<cstring>
+#include<algorithm>
+using namespace std;
+const int maxn = 1010;
+char s1[maxn],s2[maxn];
+int dp[maxn][maxn];
+int main()
+{
+    while(~scanf("%s%s",s1,s2))
+    {
+        int len1 = strlen(s1);
+        int len2 = strlen(s2);
+        memset(dp,0,sizeof(dp));
+        for(int i = 0; i < len1; i++)
+            for(int j = 0; j < len2 ;j++)
+        {
+            if(s1[i] == s2[j])
+                dp[i + 1][j + 1] = dp[i][j] + 1;
+            else
+            {
+                dp[i + 1][j + 1] = max(dp[i][j + 1],dp[i + 1][j]);
+            }
+        }
+        printf("%d\n",dp[len1][len2]);
+    }
+    return 0;
+}

@@ -1,0 +1,364 @@
+//POJ1127 给了不同的线段，求询问的两条线段是否相交
+#include<cstdio>
+#include<algorithm>
+#include<cstring>
+#include<cmath>
+using namespace std;
+const double eps = 1e-8;
+int sgn(double x)
+{
+    return x < -eps ? -1 : x > eps ? 1 : 0;
+}
+inline double add(double a, double b)
+{
+    if(abs(a + b) < eps * (abs(a) + abs(b)))
+        return 0;
+    return a + b;
+}
+struct Point
+{
+    double x,y;
+    Point(double x = 0,double y = 0):x(x),y(y){}
+    Point operator + (Point p){return Point (x + p.x,y + p.y);}
+    Point operator - (Point p){return Point (x - p.x,y - p.y);}
+    Point operator * (double d){return Point (x * d,y * d);}
+    bool operator < (Point p){return x != p.x ? x < p.x : y < p.y;}
+    double dot(Point p){return add(x * p.x, y * p.y);}//内积判断一条直线上的点在线上还是线外
+    double det(Point p){return add(x * p.y, -y * p.x);}//外积判断两条直线是否平行
+    Point ver(){return Point(-y,x);}
+};
+bool on_seg(Point p1,Point p2,Point q)//判断点是否在线上
+{
+    return (p1- q).det(p2 - q) == 0 && (p1 - q).dot(p2 - q) <= 0;
+}
+Point intersction(Point p1, Point p2,Point q1,Point q2)//计算两条线的交点
+{
+    return p1 + (p2 - p1) * ((q2 - q1).det(q1 - p1) / (q2 - q1).det(p2 - p1));
+}
+int mp[15][15];
+Point p[15],q[15];
+int n;
+void solve()
+{
+    for(int i = 0; i < n; i++)
+    {
+        mp[i][i] = 1;
+        for(int j = i + 1; j < n; j++)
+    {
+        if((p[i] - q[i]).det(p[j] - q[j]) == 0)//两条直线平行
+        {
+            mp[i][j] = mp[j][i] = on_seg(p[i],q[i],p[j]) || on_seg(p[i],q[i],q[j]) || on_seg(p[j],q[j],p[i]) || on_seg(p[j],q[j],q[i]);
+        }
+        else
+        {
+            Point r = intersction(p[i],q[i],p[j],q[j]);
+            mp[i][j] = mp[j][i] = on_seg(p[i],q[i],r) && on_seg(p[j],q[j],r);
+        }
+    }
+    }
+
+    for(int k = 0; k < n; k++)
+        for(int i = 0; i < n; i++)
+            for(int j = 0; j < n; j++)
+    {
+        if(mp[i][k] == 1 && mp[k][j] == 1)
+          mp[i][j] = 1;
+    }
+    int a,b;
+    while(scanf("%d%d",&a,&b))
+    {
+        if(a == 0 && b == 0)break;
+        a--;
+        b--;
+        if(mp[a][b])printf("CONNECTED\n");
+        else printf("NOT CONNECTED\n");
+    }
+}
+
+int main()
+{
+    while(~scanf("%d",&n) && n)
+    {
+        memset(mp,0,sizeof(mp));
+        for(int i = 0; i < n; i++)
+            scanf("%lf%lf%lf%lf",&p[i].x,&p[i].y,&q[i].x,&q[i].y);
+        solve();
+    }
+
+    return 0;
+}
+
+//POJ2318 给定不同的划分区域的线段，不同的点落在不同的区域里，问不同的区域都有多少个点，点落在矩形内而且不落在边上和分界处
+#include<cstdio>
+#include<algorithm>
+#include<cstring>
+#include<cmath>
+using namespace std;
+const double eps = 1e-8;
+int sgn(double x)
+{
+    return x < -eps ? -1 : x > eps ? 1 : 0;
+}
+inline double add(double a, double b)
+{
+    if(abs(a + b) < eps * (abs(a) + abs(b)))
+        return 0;
+    return a + b;
+}
+struct Point
+{
+    double x,y;
+    Point(double x = 0,double y = 0):x(x),y(y){}
+    Point operator + (Point p){return Point (x + p.x,y + p.y);}
+    Point operator - (Point p){return Point (x - p.x,y - p.y);}
+    Point operator * (double d){return Point (x * d,y * d);}
+    bool operator < (Point p){return x != p.x ? x < p.x : y < p.y;}
+    double dot(Point p){return add(x * p.x, y * p.y);}//内积
+    double det(Point p){return add(x * p.y, -y * p.x);}//外积/差积判断两条直线是否平行
+    Point ver(){return Point(-y,x);}
+};
+struct line
+{
+    Point a,b;
+}line[5050];
+bool on_seg(Point p1,Point p2,Point q)//判断点是否在线上
+{
+    return (p1- q).det(p2 - q) == 0 && (p1 - q).dot(p2 - q) <= 0;
+}
+Point intersction(Point p1, Point p2,Point q1,Point q2)//计算两条线的交点
+{
+    return p1 + (p2 - p1) * ((q2 - q1).det(q1 - p1) / (q2 - q1).det(p2 - p1));
+}
+int tot[5010];
+int n;
+void solve(Point temp)
+{
+    int flag = 0;
+    Point s1,s2;
+    for(int i = 0; i < n; i++)
+    {
+        s1.x = line[i].a.x - temp.x;
+        s1.y = line[i].a.y - temp.y;
+        s2.x = line[i].b.x - temp.x;
+        s2.y = line[i].b.y - temp.y;
+        if(s1.det(s2) < 0)
+        {
+            tot[i]++;
+            flag = 1;
+            break;
+        }
+    }
+    if(!flag)tot[n]++;
+}
+int main()
+{
+    int m;
+    Point a,b;
+    while(scanf("%d%d%lf%lf%lf%lf",&n,&m,&a.x,&a.y,&b.x,&b.y))
+    {
+        if(n == 0)break;
+        memset(tot,0,sizeof(tot));
+        for(int i = 0; i < n; i++)
+        {
+            scanf("%lf%lf",&line[i].a.x,&line[i].b.x);
+            line[i].a.y = a.y;
+            line[i].b.y = b.y;
+        }
+        Point temp;
+        while(m--)
+        {
+            scanf("%lf%lf",&temp.x,&temp.y);
+            solve(temp);
+        }
+    for(int i = 0; i <= n; i++)
+    {
+        printf("%d: %d\n",i,tot[i]);
+    }
+    printf("\n");
+    }
+
+    return 0;
+}
+
+POJ1228注意凸包上的点和给的所有的点的关系
+#include<cstdio>
+#include<algorithm>
+using namespace std;
+const int N = 10005;
+int n,tot;//n为二维平面上点的个数，tot为凸包上点的个数
+struct node
+{
+    int x,y;
+    node(int x = 0, int y = 0):x(x),y(y){}
+}a[N],p[N];//p[]用来存储凸包
+node operator -(node const &A, node const &B)
+{
+    return node(A.x - B.x, A.y - B.y);
+}
+double dis(node a,node b)//求两点之间的距离
+{
+    return (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
+}
+double multi(node p0,node p1,node p2)//求叉积，向量p0p2，向量p0p1，叉积为正说明p0p2在p0p1的左边
+{
+    return (p1.x - p0.x) * (p2.y - p0.y) - (p2.x - p0.x) * (p1.y - p0.y);
+}
+int cmp(node p1, node p2)//极角排序
+{
+    double x = multi(p1,p2,a[0]);//p1p2和p1a[0]的叉积为正，则以p1为原点,p1a[0]所在方向为x轴，p2在逆时针方向
+    if(x > 0 || (x == 0 && dis(p1,a[0]) < dis(p2,a[0])))return 1;
+    return 0;
+}
+int cross(node a, node b)
+{
+    return a.x * b.y - a.y * b.x;
+}
+void Graham()
+{
+    int k = 0;
+    for(int i = 0; i < n; i++)
+        if(a[i].y < a[k].y || (a[i].y == a[k].y && a[i].x < a[k].x))k = i;
+    swap(a[0],a[k]);
+    sort(a + 1,a + n,cmp);
+    tot = 2,p[0] = a[0],p[1] = a[1];
+    for(int i = 2; i < n; i++)
+    {
+        while(tot > 1 && multi(p[tot - 1],p[tot - 2],a[i]) >= 0)tot--;
+        p[tot++] = a[i];
+    }
+}
+int judge(node x, node y)
+{
+    int num = 0;
+   for(int i = 0; i < n; i++)
+   {
+       if(!cross(x - a[i],a[i] - y))
+        num++;
+   }
+   if(num >= 3)return 1;
+   else return 0;
+}
+int main()
+{
+    int t;
+    scanf("%d",&t);
+    while(t--)
+    {
+        scanf("%d",&n);
+        for(int i = 0; i < n; i++)
+            scanf("%d%d",&a[i].x,&a[i].y);
+        if(n < 6)
+        {
+            printf("NO\n");
+            continue;
+        }
+        Graham();
+        int flag = 0;
+        //printf("%d\n",tot);
+        p[tot] = p[0];
+        for(int i = 0; i < tot; i++)
+        {
+            if(!judge(p[i],p[i + 1]))
+            {
+                flag = 1;
+                break;
+            }
+        }
+        if(flag)printf("NO\n");
+        else printf("YES\n");
+    }
+    return 0;
+}
+
+POJ2187//旋转卡壳模板，求最远距离
+#include<cstdio>
+#include<algorithm>
+using namespace std;
+const int N = 50050;
+int n,tot;//n为二维平面上点的个数，tot为凸包上点的个数
+int p[N];//记录凸包中的点
+struct Point
+{
+    int x,y;
+    Point(int x = 0, int y = 0):x(x),y(y){}
+}a[N];//p[]用来存储凸包
+Point operator -(Point const &A, Point const &B)
+{
+    return Point(A.x - B.x, A.y - B.y);
+}
+int dis(Point a,Point b)//求两点之间的距离
+{
+    return (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
+}
+int cross(Point p0,Point p1,Point p2)//求叉积，向量p0p2，向量p0p1，叉积为正说明p0p2在p0p1的左边
+{
+    return (p1.x - p0.x) * (p2.y - p0.y) - (p2.x - p0.x) * (p1.y - p0.y);
+}
+int cmp(Point p1, Point p2)//极角排序
+{
+    int x = cross(p1,p2,a[0]);//p1p2和p1a[0]的叉积为正，则以p1为原点,p1a[0]所在方向为x轴，p2在逆时针方向
+    if(x > 0 || (x == 0 && dis(p1,a[0]) < dis(p2,a[0])))return 1;
+    return 0;
+}
+int cmp1(Point p1,Point p2)
+{
+    if(p1.x != p2.x)
+    {
+        return p1.x < p2.x;
+    }
+    else
+    {
+        return p1.y < p2.y;
+    }
+}
+void andrew()//找凸包O(nlogn)
+{
+    sort(a,a + n,cmp1);
+    for(int i = 0;i < n;i++)//下凸包
+    {
+        while(tot >= 2 && cross(a[p[tot - 2]],a[p[tot - 1]],a[i]) <= 0)
+        {
+            tot--;
+        }
+        p[tot++] = i;//新元素压栈
+    }
+    int temp = tot + 1;
+    for(int i = n - 2;i >= 0;i--)//上凸包
+    {
+        while(tot >= temp && cross(a[p[tot - 2]],a[p[tot - 1]],a[i]) <= 0)
+        {
+            tot--;
+        }
+        p[tot++] = i;
+    }
+    if(n > 1)
+        tot--;//因为起点被计算了两次
+}
+int rotatingcaliper()
+{
+    int q = 1;
+    int ans = 0 ;
+    for(int i = 0; i < tot; i++)
+    {
+        while(cross(a[p[i]],a[p[i + 1]],a[p[q + 1]]) > cross(a[p[i]],a[p[i + 1]],a[p[q]]))
+        {
+            q = (q + 1) % tot;
+        }
+        int d1 = dis(a[p[i]],a[p[q]]);
+        int d2 = dis(a[p[i + 1]],a[p[q]]);
+        ans = max(ans,max(d1,d2));
+    }
+    return ans;
+}
+int main()
+{
+    while(~scanf("%d",&n))
+    {
+       for(int i = 0; i < n; i++)
+        scanf("%d%d",&a[i].x,&a[i].y);
+    andrew();
+    printf("%d\n",rotatingcaliper());
+    }
+
+    return 0;
+}
