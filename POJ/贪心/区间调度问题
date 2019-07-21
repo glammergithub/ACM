@@ -1,0 +1,34 @@
+/*贪心法解决区间调度问题*/
+#include<cstdio>
+#include<iostream>
+#include<algorithm>
+#include<cmath>
+#define maxn 100010
+using namespace std;
+int n;
+pair<int,int>p[maxn];
+int main()
+{
+    cin>>n;
+    for(int i = 0; i < n; i++)
+        cin>>p[i].second;
+    for(int i = 0; i < n; i++)
+        cin>>p[i].first;
+    sort(p,p+n);
+    int t,ans;
+    ans = 0;
+    t = 0;
+    for(int i = 0; i < n; i++)
+    {
+        //当前时刻与开始时间比较
+        if(t < p[i].second)
+        {
+            ans++;
+        t = p[i].first;//是在这个条件下的
+        }
+
+    }
+    cout<<ans<<"\n";
+
+    return 0;
+}
