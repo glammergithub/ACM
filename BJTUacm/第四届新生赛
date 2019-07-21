@@ -1,0 +1,25 @@
+A
+//新生赛第一题：问小于一个数的所有数里，是偶数，又和这个数互质的数有多少个，复杂度nO(logn)，主要是那个求最大公约数gcd的算法模板需要背一下就好啦
+#include<stdio.h>
+int gcd(int a,int b)
+{
+    if(b == 0)return a;
+    return gcd(b,a % b);
+}
+int main()
+{
+    int t,kase = 1;
+    scanf("%d",&t);
+    while(t--)
+    {
+        int n,cnt = 0;
+        scanf("%d",&n);
+        for(int i = 1; i <= n; i++)
+        {
+            if((i % 2 == 0) && gcd(i,n) == 1)
+                cnt++;
+        }
+        printf("Case %d: %d\n",kase++,cnt);
+    }
+    return 0;
+}
