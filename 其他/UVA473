@@ -1,0 +1,43 @@
+状态转移方程dp[i][j][k]表示前i首歌放前j个光盘，第j个光盘用了k的时间的最多的歌的个数，枚举到第i首歌的时候，用到了第j个光盘，如果第j个光盘的时间不够，就
+是上一首歌放在这个光盘和对应的时间里的歌的个数，当满足了之后也可以选择不放，如果选择放这首歌，分类讨论这首歌是这个光盘的第一首歌还是不是，由上一首歌的
+状态转移过来
+#include<cstdio>
+#include<cstring>
+#include<algorithm>
+using namespace std;
+const int maxn = 510;
+int dp[1010][110][110],a[1010];
+int main()
+{
+    int T;
+    scanf("%d",&T);
+    while(T--)
+    {
+        int n,t,m;
+        scanf("%d%d%d",&n,&t,&m);
+        for(int i = 1; i <= n; i++)
+        {
+            if(i == 1)scanf("%d",&a[i]);
+            else scanf(", %d",&a[i]);
+        }
+//        for(int i = 1; i <= n; i++)
+//            printf("%d ",a[i]);
+//        printf("\n");
+        memset(dp,0,sizeof(dp));
+        for(int i = 1; i <= n; i++)
+            for(int j = 1; j <= m; j++)
+                for(int k = 0; k <= t; k++)
+        {
+            dp[i][j][k] = max(dp[i][j][k],dp[i - 1][j][k]);
+            if(k >= a[i])
+            {
+                dp[i][j][k] = max(dp[i - 1][j - 1][t] + 1, dp[i][j][k]);
+                dp[i][j][k] = max(dp[i - 1][j][k - a[i]] + 1,dp[i][j][k]);
+            }
+        }
+        if(T)
+        printf("%d\n\n",dp[n][m][t]);
+        else printf("%d\n",dp[n][m][t]);
+    }
+    return 0;
+}
