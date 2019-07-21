@@ -1,0 +1,42 @@
+#include<cstdio>
+#include<iostream>
+using namespace std;
+typedef long long ll;//注意最后的价值可能会爆int
+int a[20010];
+int main()
+{
+    int n;
+    ll ans;
+    cin>>n;
+    ans = 0;
+    for(int i = 0; i < n; i++)
+        cin>>a[i];
+    while(n > 1)
+    {
+        int mi1 = 0;
+        int mi2 = 1;
+        if(a[mi1] > a[mi2])swap(mi1,mi2);//注意是交换脚标
+        for(int i = 2; i < n; i++)
+        {
+            if(a[i] < a[mi1])
+            {
+                mi2 = mi1;
+                mi1 = i;
+            }
+            else if(a[i] < a[mi2])
+                mi2 = i;
+        }
+        int t = a[mi1] + a[mi2];
+        ans += t;
+        //printf("%d\n",ans);
+        /*把和放到a[mi1]里，由于合上之后会减少最后的一部分，将那部分放到a[mi2]里
+        如果mi1恰好是最后一个，最后一个由于合并之后就不存在了，存在的只有和，所以将
+        mi1与mi2调换一下，mi2要是最后一个的话直接就没有了*/
+        if(mi1 == n - 1)swap(mi1,mi2);
+        a[mi1] = t;
+        a[mi2] = a[n - 1];
+        n--;
+    }
+    cout<<ans<<endl;
+    return 0;
+}
