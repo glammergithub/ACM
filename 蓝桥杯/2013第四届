@@ -1,0 +1,356 @@
+/*第一题 
+#include<iostream>
+#include<cstring>
+#include<algorithm>
+using namespace std;
+typedef long long ll;
+int day1[13] = {0,31,28,31,30,31,30,31,31,30,31,30,31};
+int day2[13] = {0,31,29,31,30,31,30,31,31,30,31,30,31};
+bool judge(int y)
+{
+	if(y % 400 == 0 || (y % 100 != 0 && y % 4 == 0))
+	   return 1;
+	return 0;
+}
+int main()
+{	
+    int y,m,d;
+    cin>>y>>m>>d;
+    int sum = 0;
+    int n;
+    cin>>n;
+    while(sum < n)
+    {
+    	sum++;
+    	
+    	if(judge(y) && d == day2[m])
+    	{
+    		d = 1;
+    		m++;
+		}
+		else if(!judge(y) && d == day1[m])
+		{
+			d = 1;
+			m++;
+		}
+		else 
+		d++;
+		
+		if(m == 13)
+		{
+			m = 1;
+			y++;
+		}
+	}
+	printf("%d-%d-%d",y,m,d);
+  	return 0;
+}
+
+
+1777 4 30 
+8113
+
+
+*/
+/*
+第二题
+ 
+#include<iostream>
+#include<cstring>
+#include<algorithm>
+using namespace std;
+typedef long long ll;
+int main()
+{
+	int cnt = 0;
+	for(int a = 1; a <= 9; a++)
+	{
+		for(int b = 1; b <= 9; b++)
+		{
+			if(a == b)continue;
+			for(int c = 1; c <= 9; c++)
+			{
+				if(a == c || b == c)continue;
+				for(int d = 1; d <= 9; d++)
+				{
+					if(a == d || b == d || c == d)continue;
+					for(int e = 1; e <= 9; e++)
+					{
+						if(e == a || e == b || e == c || e == d)
+						   continue;
+						int x = a * 10 + b;
+						int y = c * 100 + d * 10 + e;
+						int u = a * 100 + d * 10 + b;
+						int v = c * 10 + e;
+						if(x * y == u * v)
+						{
+							cnt++;
+						}
+					}
+				}
+			}
+		}
+	}
+	cout<<cnt<<endl;
+	return 0;
+}
+142
+*/
+/*第三题 
+#include<iostream>
+#include<cstring>
+#include<algorithm>
+using namespace std;
+typedef long long ll;
+int step = 0,num = 0;
+void dfs(int cnt)
+{
+	if(step >= 39)
+	{
+		if(step == 39 && cnt % 2 == 0)
+		   num++;
+		return;
+	}
+	step++;
+	dfs(cnt + 1);
+	step--;
+	step += 2;
+	dfs(cnt + 1);
+	step -= 2;
+}
+int main()
+{
+	dfs(0);
+	cout<<num<<endl;
+	return 0;
+}
+51167078
+*/
+/*第五题 
+#include<cstdio>
+#include<iostream>
+#include<cstring>
+#include<algorithm>
+using namespace std;
+typedef long long ll;
+char *prefix(char *haystack_start,char *needle_start)
+{
+	char *haystack = haystack_start;
+	char *needle = needle_start;
+	while(*haystack && *needle)
+	{
+		if(*haystack++ != *needle++)return NULL;//填空位置 
+	}
+	if(*needle)return NULL;
+	return haystack_start;
+}
+int main()
+{
+	char s1[1000],s2[1000];
+	scanf("%s%s",s1,s2);
+	if(prefix(s1,s2))
+	{
+		cout<<"Yes"<<endl;
+	}
+	else 
+	cout<<"No"<<endl;
+	return 0;
+}
+*/
+/*第六题 
+#include<cstdio>
+#include<iostream>
+#include<cstring>
+#include<algorithm>
+using namespace std;
+typedef long long ll;
+void sort3p(int *x,int len)
+{
+	int p = 0;
+	int left = 0;
+	int right = len - 1;
+	while(p <= right)
+	{
+		if(x[p] < 0)
+		{
+			int t = x[left];
+			x[left] = x[p];
+			x[p] = t;
+			left++;
+			p++;
+		}
+		else if(x[p] > 0)
+		{
+			int t = x[right];
+			x[right] = x[p];
+			x[p] = t;
+			right--;
+		}
+		else 
+		{
+	       p++;//填空 
+		}
+	}
+}
+int main()
+{
+	int a[30] = {25,18,-2,0,16,-5,33,21,0,19,-16,25,-3,0};
+	int b[30] = {-3,-2,-16,-5,0,0,0,21,19,33,25,16,18,25};
+	sort3p(a,14);
+	for(int i = 0; i < 14; i++)
+	   cout<<a[i]<<" ";
+	cout<<endl;
+	return 0;
+}
+ */ 
+ /*第七题 
+ #include<cstdio>
+ #include<algorithm>
+ #include<iostream>
+ #include<cstring>
+ using namespace std;
+ const int maxn = 1e5 + 10;
+ int a[110];
+ int cnt[maxn];
+ int main()
+ {
+ 	int n;
+ 	cin>>n;
+ 		int x = 1;
+ 	while(cin>>a[x++]);
+ 		int len = x;
+ 			sort(a + 1,a + len + 1);
+ 	for(int i = 1; i <= len; i++)
+ 	{
+ 		cnt[a[i]]++;
+	}
+	int index1,index2;
+	for(int i = a[1]; i <= a[len]; i++)
+	{
+		if(!cnt[i])
+		index1 = i;
+		if(cnt[i] == 2)
+		index2 = i;
+	}
+	cout<<index1<<" "<<index2<<endl;
+ 
+ 	return 0;
+ }
+ */
+ /*第八题 
+#include<cstdio>
+#include<cstring>
+#include<iostream>
+using namespace std;
+int main()
+{
+	char s1[1010],s2[1010];
+	int pos[1010];
+	scanf("%s%s",s1,s2);
+	int len = strlen(s1);
+	int cnt = 0;
+	for(int i = 0; i < len; i++)
+	{
+		if(s1[i] != s2[i])
+		   pos[cnt++] = i;
+	}
+	int ans = 0;
+	for(int i = 1; i < cnt; i += 2)
+	{
+		ans += pos[i] - pos[i - 1];
+	}
+	cout<<ans<<endl;
+	return 0;
+ } 
+ */
+/*带分数 
+#include<cstdio>
+#include<iostream>
+#include<algorithm>
+using namespace std;
+int a[15];
+int calc(int st,int en)
+{
+	int res = 0;
+	for(int i = st; i <= en; i++)
+	{
+		res = res * 10 + a[i];
+	}
+	return res;
+}
+int main()
+{
+	int n;
+	cin>>n;
+    for(int i = 1; i <= 9; i++)
+       a[i] = i;
+    sort(a + 1, a + 10);
+    int cnt = 0;
+    do
+     {
+     	for(int i = 1; i <= 9; i++)
+     	{
+     		int x = calc(1,i);
+     		for(int j = i + 1; j <= i + (9 - i) / 2; j++)
+     		{
+     			int z = calc(i + 1,j);
+     			int y = calc(j + 1,9);
+     		    if(y % z == 0 && (x + y / z == n))
+     		       cnt++;
+			 }
+		 }
+	 }while(next_permutation(a + 1,a + 10));
+	 cout<<cnt<<endl;
+	return 0;
+}
+*/
+/*第十题 
+#include<cstdio>
+#include<algorithm>
+#include<iostream>
+using namespace std;
+const int maxn = 5e4 + 10;
+int a[maxn];
+int main()
+{
+	int n;
+	cin>>n;
+	for(int i = 1; i <= n; i++)
+	    cin>>a[i];
+	int cnt = 0;
+	for(int i = 1; i <= n; i++)
+	{
+		int maxx = 0,minx = maxn;
+		for(int j = i; j <= n; j++)
+		{
+			maxx = max(maxx,a[j]);
+			minx = min(minx,a[j]);
+		//	cout<<maxx<<" "<<minx<<" "<<j - i<<endl;
+			if(maxx - minx == j - i)
+			   cnt++;
+		}
+	}
+	cout<<cnt<<endl;
+	return 0;
+} 
+*/ 
+/*
+3 2 4 1
+3 3 0
+3 2 1
+4 2 2
+4 1 3
+3 3 -1
+3 2 0
+4 2 1
+4 1 2
+3 3 -2
+3 2 -1
+4 2 0
+4 1 1
+3 3 -3
+3 2 -2
+4 2 -1
+4 1 0
+4
+*/

@@ -1,0 +1,407 @@
+第二届 
+http://www.dotcpp.com
+黑色星期五
+#include<cstdio>
+#include<iostream>
+#include<vector>
+#include<queue>
+#include<cstring>
+#include<algorithm>
+using namespace std;
+const int maxn = 1e5 + 10;
+const int INF = 0x3f3f3f3f;
+int ya[13] = {0,31,28,31,30,31,30,31,31,30,31,30,31};
+int yb[13] = {0,31,29,31,30,31,30,31,31,30,31,30,31};
+int judge(int x)
+{
+	if(x % 400 == 0 || ((x % 4 == 0) && (x % 100 != 0)))
+	   return 1;
+	return 0;
+}
+int main()
+{
+	int y,sum = 0;
+	cin>>y;
+	for(int i = 1998; i < y; i++)
+	{
+		if(judge(i))
+		  sum += 366;
+		else 
+		  sum += 365;
+	}
+	int r = (4 + sum) % 7;
+	if(r == 0)r = 7;
+    int cnt = 0;
+	for(int i = 1; i <= 12; i++)
+	{
+		//cout<<(12 + r) % 7<<endl;
+		if((12 + r) % 7 == 5)
+		{
+			cnt++;
+		}
+		r += 12;
+		if(i == 2 && judge(y))
+		{
+			r += (yb[i] - 13 + 1);
+		}
+		else 
+		{
+			r += (ya[i] - 13 + 1);
+		}
+	}
+	cout<<cnt<<endl;
+	return 0;
+}
+兑换纸币
+#include<cstdio>
+#include<iostream>
+#include<vector>
+#include<queue>
+#include<cstring>
+#include<algorithm>
+using namespace std;
+const int maxn = 1e5 + 10;
+const int INF = 0x3f3f3f3f;
+int main()
+{
+	for(int a = 1; a <= 100; a++)
+	   for(int b = 1; b <= 100; b++)
+	       for(int c = 1; c <= 100; c++)
+	       {
+	       	   if(a * 18 == b * 15 && b * 15 == c * 20)
+	       	   {
+	       	   	   if((a + b * 5 + c * 10) % 100 == 0)
+	       	   	     {
+	       	   	     	printf("%d,%d,%d,%d\n",a,b,c,(a + b * 5 + c * 10) / 10);
+	       	   	     	
+					 }
+			   }
+		   }
+	return 0;
+}
+
+
+第三题 字符串反转
+#include<cstdio>
+#include<cstring>
+using namespace std;
+void reverse_str(char * buf,int n)
+{
+	if(n < 2)return;
+	char tmp = buf[0];
+	buf[0] = buf[n - 1];
+	buf[n - 1] = tmp;
+	printf("%c %c\n",buf[0],buf[n - 1]);
+	reverse_str(buf + 1,n - 2);//每次操作后字符串的首字母变了，新的字符串对应的字符位置也变了 
+}
+int main()
+{
+	char s[20];
+	scanf("%s",s);
+	reverse_str(s,strlen(s));
+	printf("%s",s);
+}
+
+第五题 字符串右移n位
+#include<cstdio>
+#include<cstring>
+#include<malloc.h>
+using namespace std;
+void shift(char *s,int n)
+{
+	char *p,*q;
+	int len = strlen(s);
+	if(len == 0)return;
+	if(n <= 0 || n >= len)return;
+	char *s2 = (char *)malloc(len  * sizeof(char));//答案是(len + 1) * sizeof(char)
+	p = s;
+	q = s2 + n % len;
+	while(*p)
+	{
+		*q++ = *p++;
+		if(q - s2 >= len)
+		{
+			*q = '\n';//答案是'\0' 
+			q = s2;
+		}
+	}
+	strcpy(s,s2);
+	free(s2);
+}
+int main()
+{
+	char s[100];
+	scanf("%s",s);
+	int n;
+	scanf("%d",&n);
+	shift(s,n);
+	printf("%s",s);
+} 
+
+
+#include<cstdio>
+#include<iostream>
+#include<cstring>
+using namespace std;
+int g(int a,int b)
+{
+	char sa[] = "00000000";
+	char sb[] = "00000000";
+	int n = 0;
+	sprintf(sa,"%8d",a);
+	sprintf(sb,"%8d",b);
+	for(int i = 0; i < 8; i++)
+		for(int j = 1; j <= 8 - i; j++)
+		{
+			char t = sa[i + j];
+			sa[i + j] = 0;
+			if(strstr(sb,sa + i))//找sa+i为开头的字符串在sb字符串中第一次出现的位置
+			{	
+				if(j > n)n = j;//，找到了就更新长度最大值
+			}
+			sa[i + j] = t;
+		}
+		return n;
+}
+int main()
+{
+    int a,b;
+	cin>>a>>b;
+	cout<<g(a,b)<<endl;
+	return 0;
+}
+
+#include<cstdio>
+#include<iostream>
+#include<cstring>
+using namespace std;
+//m为红球的个数，n为白球的个数，x为需要取出的数目，y为红球至少出现的次数
+double pro(int m,int n,int x,int y)
+{
+	if(y > x)return 0;
+	if(y == 0)return 1;
+	if(y > m)return 0;
+	if(x - n > y)return 1;
+	double p1 = pro(m - 1, n,x - 1, y - 1);
+	double p2 = pro(m,n - 1,x - 1,y);
+	return (double)m / (m + n) * p1 + (double)n / (m + n) * p2; 
+}
+int main()
+{
+    cout<<pro(17,13,15,8)<<endl;
+	return 0;
+}
+
+#include<cstdio>
+#include<iostream>
+#include<cstring>
+using namespace std;
+int a[25][25];
+int main()
+{
+	int n;
+	cin>>n;
+	int cnti = 1,cntj = 1;
+	int tot = 0;
+	while(tot < (n + 1) * n / 2)
+	{
+        while(cnti >= 1 && cnti <= n && cntj >= 1 && cntj <= n && !a[cnti][cntj])
+			a[cnti][cntj++] = ++tot;
+		  cntj -= 2;
+		  cnti++;
+		while(cnti >= 1 && cnti <= n && cntj >= 1 && cntj <= n && !a[cnti][cntj])
+			a[cnti++][cntj--] = ++tot;
+		    cnti -= 2;
+		    cntj ++;
+        while(cnti >= 1 && cnti <= n && cntj >= 1 && cntj <= n && !a[cnti][cntj])a[cnti--][cntj] = ++tot;
+		    cnti ++;
+			cntj++;
+	}
+	for(int i = 1; i <= n; i++)
+	{
+       for(int j = 1; j <= n - i + 1; j++)
+		{
+		    printf("%4d",a[i][j]);
+		}
+	   printf("\n");
+	}
+		
+	return 0;
+}
+
+由于要输出所有的方案，而且先输出方案数，所以需要dfs搜索遍历一遍然后用二维数组存第i个方案的第j个物品的价值，先遍历一个物品到底再选第二个，依次类推
+不能每一个都从1开始寻找，因为会出现重复的情况
+#include<cstdio>
+#include<iostream>
+#include<algorithm>
+#include<cstring>
+#include<cmath>
+#include<string>
+#include<queue>
+#include<vector>
+using namespace std;
+const int maxn = 1e5 + 10;
+int a[110],b[110];
+int t = 100000;
+const int INF = 0x3f3f3f3f;
+int m,money,cnt;
+int num[110];
+int dp[110][1010];
+void dfs(int x)
+{
+	if(money > 1000 || x > m)return;
+	if(money == 1000)
+	{
+		cnt++;
+		for(int i = 1; i <= m; i++)
+		{
+			dp[cnt][i] = num[i];
+		}
+		return;
+	}
+	num[x]++;
+	money += a[x];
+	dfs(x);
+	num[x]--;
+	money -= a[x];
+	dfs(x + 1);
+}
+int main()
+{
+    cin>>m;
+    for(int i = 1; i <= m; i++)
+       cin>>a[i];   
+    dfs(1);
+    cout<<cnt<<endl;
+    for(int i = 1; i <= cnt; i++)
+    {
+    	for(int j = 1; j <= m; j++)
+    	{
+    		if(j == 1)printf("%d",dp[i][j]);
+    		else printf(" %d",dp[i][j]);
+		}
+    	cout<<endl;
+	}
+	return 0;
+}
+
+第十题 模拟
+#include<cstdio>
+#include<iostream>
+#include<algorithm>
+#include<cstring>
+#include<cmath>
+#include<string>
+#include<queue>
+#include<vector>
+using namespace std;
+const int maxn = 1e5 + 10;
+int a[110],b[110];
+int t = 100000;
+const int INF = 0x3f3f3f3f;
+int m,money,cnt;
+char mp[5][5];
+int vis[26];
+char s[1010],s1[1010],res[1010];
+void findd(int x,int y)
+{
+	int a1,b1,a2,b2;
+	int flag1 = 0,flag2 = 0;
+	for(int i = 0; i < 5; i++)
+	    for(int j = 0; j < 5; j++)
+	    {
+	    	if(s1[x] == mp[i][j])
+	    	{
+	    		a1 = i;
+	    		b1 = j;
+	    		flag1 = 1;
+			}
+			if(s1[y] == mp[i][j])
+			{
+				a2 = i;
+				b2 = j;
+				flag2 = 1;
+			}
+		}
+		if(a2 == b2)
+		{
+			res[x] = s1[x];
+			res[y] = s1[y];
+			return;
+		}
+		if(!flag1 || !flag2)
+		{
+			res[x] = s1[x];
+			res[y] = s1[y];
+			return;
+		}
+		if(a1 == a2 || b1 == b2)
+		{
+			res[x] = s1[y];
+			res[y] = s1[x];
+			return;
+		}
+		if(a1 != a2 && b1 != b2)
+		{
+			res[x] = mp[a1][b2];
+			res[y] = mp[a2][b1];
+			return;
+		}
+}
+int main()
+{
+    scanf("%s",s);
+    int len = strlen(s);
+    int cnt = 0;
+    for(int i = 0; i < 5; i++)
+    {
+    	for(int j = 0; j < 5; j++)
+    	{
+    		if(cnt < len)
+    		{
+    			mp[i][j] = s[cnt];
+    	        vis[s[cnt] - 'a'] = 1;
+				cnt++;		
+			}
+			else 
+			{
+				for(int k = 0; k < 26; k++)
+				{
+					if(!vis[k])
+					{
+						vis[k] = 1;
+						mp[i][j] = k + 'a';
+						break;
+					}
+				}
+			}
+		}
+	}
+	/*for(int i = 0; i < 5; i++)
+	{
+		for(int j = 0; j < 5; j++)
+		   cout<<mp[i][j];
+		cout<<endl;
+	}*/ 
+	scanf("%s",s1);
+	int len1 = strlen(s1);
+	int cur = 0;
+	int mark = len1 & 1;
+	if(mark)
+	{
+	   	res[len1 - 1] = s1[len1 - 1];
+	   	res[len1] = '\0';
+	   	//printf("%c\n",res[len1 - 1]);
+	   	s1[len1 - 1] = '\0';
+	   	len1--;
+	}
+	else 
+	res[len1] = '\0';
+	for(int i = 0; i < len1; i += 2)
+	{
+		findd(i,i + 1);
+	}
+	printf("%s\n",res);
+	return 0;
+}
+

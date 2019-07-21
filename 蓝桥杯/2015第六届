@@ -1,0 +1,434 @@
+/***********蓝桥杯第六届*****************/
+//第一题
+/*
+#include<cstdio>
+#include<iostream>
+using namespace std;
+int main()
+{
+	int cnt = 0;
+	for(int a = 1; a <= 9; a++)
+	   for(int b = 0; b <= 9; b++)
+	   {
+	   	  for(int c = 0; c <= 9; c++)
+	   	  {
+	   	  	 for(int d = 0; d <= 9; d++)
+	   	  	 {
+				    for(int e = 0; e <= 9; e++)
+				    {
+				        if(a == 4 || b == 4 || c == 4 || d == 4 || e == 4)
+				          continue;
+				        else
+				        cnt++;
+					}
+			 }
+		  }
+	   }
+	   cout<<cnt<<endl;
+	return 0;
+}
+//52488 -10
+*/
+//第二题
+/*
+ #include<cstdio>
+#include<iostream>
+using namespace std;
+int ya[13] = {0,31,29,31,30,31,30,31,31,30,31,30,31};
+int yb[13] = {0,31,28,31,30,31,30,31,31,30,31,30,31};
+bool judge(int y)
+{
+	if(y % 400 == 0 || (y % 4 == 0 && y % 100 != 0))
+	  return 1;
+	return 0;
+}
+int main()
+{
+	int yy,mm,dd;
+	cin>>yy>>mm>>dd;
+	int cnt = 0;
+	while(cnt < 1000)
+	{
+		if(judge(yy))
+		{
+			if(mm == 12 && dd == ya[mm])
+			{
+				dd = 1;
+				mm = 1;
+				yy++;
+			}
+			else if(dd == ya[mm])
+			{
+				mm++;
+				dd = 1;
+			}
+			else dd++;
+		}
+		else
+		{
+			if(mm == 12 && dd == yb[mm])
+			{
+				dd = 1;
+				mm = 1;
+				yy++;
+			}
+			else if(dd == yb[mm])
+			{
+				mm++;
+				dd = 1;
+			}
+			else dd++;
+		}
+		cnt++;
+	}
+	cout<<yy<<" "<<mm<<" "<<dd<<endl;
+	return 0;
+}
+//2017-08-05 0 这道题因为自己太大意错了，最特殊的不过是一年的最后一天还有每个月的最后一天，注意下一天的年，月，日的变化
+*/
+//第三题
+/*
+#include<cstdio>
+using namespace std;
+int main()
+{
+	for(int a = 1; a <= 9; a++)
+	{
+		for(int b = 0; b <= 9; b++)
+		{
+			if(a == b)continue;
+			for(int c = 0; c <= 9; c++)
+			{
+				if(c == a || c == b)continue;
+				for(int d = 0; d <= 9; d++)
+				{
+					if(d == a || d == b || d == c)continue;
+					for(int e = 1; e <= 9; e++)
+					{
+						if(e == a || e == b || e == c || e == d)
+						continue;
+						for(int f = 0; f <= 9; f++)
+						{
+							if(f == a || f == b || f == c || f == d || f == e)
+							   continue;
+							   for(int g = 0; g <= 9; g++)
+							   {
+							   	 if(g == a || g == b || g == c || g == d || g == e || g == f)
+							   	    continue;
+							   	    for(int k = 0; k <= 9; k++)
+							   	    {
+							   	    	if(k == a || k == b || k == c || k == d || k == e || k == f || k == g)
+							   	    	continue;
+							   	    if(a * 1000 + b * 100 + c * 10 + d + e * 1000 + f * 100 + g * 10 + b == e * 10000 + f * 1000 + c * 100 + b * 10 + k)
+							   	    {
+							   	    	printf("%d%d%d%d\n",e,f,g,b);
+									}
+							   }
+						}
+					}
+				}
+			}
+		}
+	}
+}
+	return 0;
+}
+//1085
+*/
+//第四题
+/* 
+#include <stdio.h>
+
+#include <string.h>
+
+
+
+void StringInGrid(int width, int height, const char* s)
+
+{
+
+	int i,k;
+
+	char buf[1000];
+
+	strcpy(buf, s);
+
+	if(strlen(s)>width-2) buf[width-2]=0;
+
+	printf("+");
+
+	for(i=0; i<width-2; i++) printf("-");
+
+	printf("+\n");
+
+
+
+	for(k=1; k<(height-1)/2; k++) {
+
+		printf("|");
+
+		for(i=0; i<width-2; i++) printf(" ");
+
+		printf("|\n");
+
+	}
+
+
+
+	printf("|");
+
+
+
+	printf("%*s%s%*s",(width - strlen(s) - 2) / 2,"",s,(width - strlen(s) - 2) / 2,"");  //填空
+
+
+
+	printf("|\n");
+
+
+
+	for(k=(height-1)/2+1; k<height-1; k++) {
+
+		printf("|");
+
+		for(i=0; i<width-2; i++) printf(" ");
+
+		printf("|\n");
+
+	}
+
+
+
+	printf("+");
+
+	for(i=0; i<width-2; i++) printf("-");
+
+	printf("+\n");
+
+}
+
+
+
+int main()
+
+{
+
+	StringInGrid(20,6,"abcd1234");
+
+	return 0;
+
+}
+*/
+//第五题
+/* 
+#include<stdio.h>
+
+ 
+
+void test(int x[])
+
+{
+
+    int a = x[0]*1000 + x[1]*100 + x[2]*10 +x[3];
+
+    int b = x[4]*10000 + x[5]*1000 + x[6]*100 +x[7]*10 + x[8];
+
+   
+
+    if(a*3==b) printf("%d / %d\n", a,b);
+
+}
+
+ 
+
+void f(int x[],int k)
+
+{
+
+    int i,t;
+
+    if(k>=9){
+
+        test(x);
+
+        return;
+
+    }
+
+   
+
+    for(i=k; i<9; i++){
+
+        {t=x[k]; x[k]=x[i]; x[i]=t;}
+
+        f(x,k+1);
+
+        t=x[k]; x[k]=x[i]; x[i]=t;// 填空处
+
+    }
+
+}
+
+   
+
+int main()
+
+{
+
+    int x[] = {1,2,3,4,5,6,7,8,9};
+
+    f(x,0);
+
+    return 0;
+
+}
+*/
+//第六题
+/*
+#include<cstdio>
+using namespace std;
+int main()
+{
+	int sum = 1225;
+	for(int i = 1; i <= 48; i++)
+	   for(int j = 1; j <= 48; j++)
+	   {
+	   	  if(j == i)continue;
+	   	  if((sum - i - i - 1 + i * (i + 1) - j - j - 1 + j * (j + 1)) == 2015)
+	   	  {
+	   	  	if(i < j)
+	   	  	  printf("%d\n",i);
+	   	  	else 
+	   	  	  printf("%d\n",j);
+		  }
+	   }
+	return 0;
+} 
+*/
+//16
+//第七题这道题注意牌之间是没有顺序的，所以只要考虑每种牌的个数就行
+/* 
+#include<cstdio>
+#include<iostream>
+using namespace std;
+typedef long long ll;
+int vis[20];
+ll ans,sum;
+void dfs(int x)
+{
+	if(sum > 13)return;
+	if(x == 14)
+	{
+	   if(sum == 13)
+	     ans++;
+	   return;	
+	}
+	for(int i = 0; i < 5; i++)
+	{
+		sum += i;
+		dfs(x + 1);
+		sum -= i;
+	} 
+}
+int main()
+{
+	dfs(1);
+	cout<<ans<<endl;
+	return 0;
+}
+//3598180*/
+//第八题对拍程序 
+/*
+#include<cstdio>
+#include<iostream>
+#include<cmath>
+#include<cstdlib>
+#include<ctime>
+using namespace std;
+int main()
+{
+	freopen("data.txt","w",stdout);
+	srand(time(NULL));
+	int n = 10000;
+	while(n--)
+	{
+		printf("%d %d %d\n",rand(),rand(),rand());
+	}
+	freopen("data.txt","r",stdin);
+	freopen("out1.txt","w",stdout);
+	int w,m,n;
+	while(cin>>w>>m>>n)
+	{
+		int r1,r2,c1,c2;
+	if(m % w == 0)
+	{
+		r1 = m / w;
+		if(r1 % 2 == 1)
+		{
+			c1 = w;
+		}
+		else 
+		{
+			c1 = 1;
+		}
+		
+	}
+	else 
+	{
+	   r1 = m / w + 1;
+	   if(r1 % 2 == 1)
+	   {
+	      c1 = m % w;		   	  
+	   }
+	   else 
+	   {
+	   	  c1 = w - m % w + 1;
+	   }
+
+	}
+	if(n % w == 0)
+	{
+		r2 = n / w;
+		if(r2 % 2 == 1)
+		{
+			c2 = w;
+		}
+		else 
+		{
+			c2 = 1;
+		}
+		
+	}
+	else 
+	{
+		r2 = n / w + 1;
+		if(r2 % 2 == 1)
+		{
+			c2 = n % w;
+		}
+		else 
+		{
+			c2 = w - n % w + 1;
+		}
+		
+	}
+	cout<<abs(r1 - r2) + abs(c1 - c2)<<endl;
+	}
+	freopen("data.txt","r",stdin);
+	freopen("out2.txt","w",stdout);
+	int w,m,n;  
+	while(cin>>w>>m>>n)
+	{
+		int x1,x2,y1,y2;  
+    x1=(m-1)/w;  
+    y1=(m-1)%w;  
+    x2=(n-1)/w;  
+    y2=(n-1)%w;  
+    if(x1%2)  
+        y1=w-y1-1;  
+    if(x2%2)  
+        y2=w-y2-1;  
+    printf("%d\n",abs(x1-x2)+abs(y1-y2)); 
+	}
+	return 0;
+ } */

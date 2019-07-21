@@ -1,0 +1,1088 @@
+16进制转8进制，先将16进制转为2进制，再将2进制转为8进制，注意之后转的时候是从后向前找的，还有前导0要注意
+方法一、
+#include<cstdio>
+#include<iostream>
+#include<algorithm>
+#include<cmath>
+#include<cstring>
+#include<vector>
+using namespace std;
+const int maxn = 1e5 + 10;
+const double pi = acos(-1.0);
+typedef long long ll;
+int ans16[4 * maxn],ans8[3 * maxn];
+char str[maxn];
+int tmp[4 * maxn],mark;
+void convert(int x)
+{
+	int cnt = 0;
+	while(x)
+	{
+		tmp[cnt++] = x % 2;
+		x /= 2;
+	}
+	while(cnt < 4)
+	{
+		tmp[cnt++] = 0;
+	}
+	for(int i = cnt - 1; i >= 0; i--)
+	{
+	    ans16[mark++] = tmp[i];
+	}
+}
+int main()
+{
+    int n;
+    cin>>n;
+    while(n--)
+    {
+    	mark = 0;
+    	scanf("%s",str);
+    	int len = strlen(str);
+    	int x;
+    	for(int i = 0; i < len; i++)
+    	{
+    	    if(str[i] >= '0' && str[i] <= '9')
+			{
+				x = str[i] - '0';
+		    }	
+		    else x = str[i] - 'A' + 10;
+		    convert(x);
+		}
+		int flag = 0,cnt = 0,ans = 0,s = 0;
+	//	printf("%d\n",mark);
+	//	for(int i = 0; i < mark; i++)
+	//	printf("%d",ans16[i]);
+		//printf("\n");
+		for(int i = mark - 1; i >= 0; i--)
+		{
+			//printf("1\n");
+			if(cnt == 0)
+			{
+				ans += ans16[i];
+				cnt++;
+			}
+			else if(cnt == 1)
+			{
+				ans += 2 * ans16[i];
+				cnt++;
+			}
+			else if(cnt == 2)
+			{
+				ans += 4 * ans16[i];
+				cnt = 0;
+				ans8[s++] = ans;
+				ans = 0;
+			}
+		}
+		if(mark % 3 != 0)ans8[s++] = ans;
+		flag = 1;
+		for(int i = s - 1; i >= 0; i--)
+		{
+			if(flag)
+			{
+				if(ans8[i])
+				flag = 0;
+				else continue;
+			}
+			printf("%d",ans8[i]);
+		}
+		printf("\n");
+	}
+	return 0;
+}
+方法二、简单不易错，字符串拼接
+#include<cstdio>
+#include<iostream>
+#include<algorithm>
+#include<cmath>
+#include<cstring>
+#include<vector>
+#include<string>
+using namespace std;
+const int maxn = 1e5 + 10;
+const double pi = acos(-1.0);
+typedef long long ll;
+int ans16[4 * maxn],ans8[3 * maxn];
+char str[maxn];
+int tmp[4 * maxn],mark;
+int main()
+{
+    int n;
+    cin>>n;
+    while(n--)
+    {
+    	string s1,s2;
+    	cin>>s1;
+    	s2 = "";
+    	for(int i = 0; i < s1.size(); i++)
+    	{
+    		switch(s1[i])
+    		{
+    			case '0':s2 += "0000";break;
+    			case '1':s2 += "0001";break;
+    			case '2': s2 += "0010";break;
+    			case '3':s2 += "0011";break;
+    			case '4':s2 += "0100";break;
+    			case '5' : s2 += "0101";break;
+    			case '6':s2 += "0110";break;
+    			case '7': s2 += "0111";break;
+    			case '8':s2 += "1000";break;
+    			case '9' :s2 += "1001";break;
+    			case 'A' :s2 += "1010";break;
+    			case 'B' :s2 += "1011";break;
+    			case 'C' :s2 += "1100";break;
+    			case 'D' :s2 += "1101";break;
+    			case 'E' :s2 += "1110";break;
+    			case 'F' :s2 += "1111";break;
+			}
+		}
+		int len = s2.length();
+		if(len % 3 == 1)s2 = "00" + s2;
+		else if(len % 3 == 2)s2 = "0" + s2;
+		int num;
+		int flag = 0;
+		for(int i = 0; i < s2.size(); i += 3)
+		{
+			num = (s2[i] - '0') * 4 + (s2[i + 1] - '0') * 2 + s2[i + 2] - '0';
+			if(num)
+			flag = 1;
+			if(flag)
+			cout<<num;
+		}
+		printf("\n");
+	}
+	return 0;
+}
+
+16进制转10进制
+一开始居然把字符串的低位和高位看反了，找了半天bug....
+#include<cstdio>
+#include<iostream>
+#include<algorithm>
+#include<cmath>
+#include<cstring>
+#include<vector>
+#include<string>
+#include<queue>
+using namespace std;
+const int maxn = 3e5 + 10;
+const double pi = acos(-1.0);
+typedef long long ll;
+char str[maxn];
+ll poww(int x)
+{
+	if(x == 0)return 1LL;
+	else 
+	{
+		ll ans = 1;
+		for(int i = 1; i <= x; i++)
+		{
+			ans *= 16LL;
+		}
+		return ans;
+	}
+}
+int main()
+{
+	scanf("%s",str);
+	int len = strlen(str);
+	//cout<<len<<endl;
+	ll ans = 0;
+	for(int i = 0; i < len; i++)
+	{
+		if(str[i] >= '0' && str[i] <= '9')
+		{
+			ans += (long long)(str[i] - '0') * poww(len - 1 - i);
+			//cout<<poww(i)<<endl;
+		}
+		else 
+		{
+			ans += (long long)(str[i] - 'A' + 10) * poww(len - 1 - i);
+		}
+	}
+	cout<<ans<<endl;
+	return 0;
+}
+10进制转16进制，一开始没有考虑0，后来考虑0了输出的时候位置还放错了，要仔细啊，多测几组数据...
+#include<cstdio>
+#include<iostream>
+#include<algorithm>
+#include<cmath>
+#include<cstring>
+#include<vector>
+#include<string>
+#include<queue>
+using namespace std;
+const int maxn = 15;
+const double pi = acos(-1.0);
+typedef long long ll;
+char str[maxn];
+int main()
+{
+	int a;
+    cin>>a;
+    if(a == 0)
+	{
+		cout<<0<<endl;
+		return 0;
+	}
+    int i = 0;
+    while(a)
+    {
+    	int x = a % 16;
+    	if(x >= 0 && x <= 9)
+    	{
+    		str[i++] = '0' + x;
+		}
+		else 
+		{
+			str[i++] = 'A' + x - 10;
+		}
+		a /= 16;
+	}
+
+	int len = i,flag = 0;
+	for(int i = len - 1; i >= 0; i--)
+	{
+		if(str[i] != '0')flag = 1;
+		if(flag)
+		{
+			cout<<str[i];
+		}
+	}
+	cout<<endl;
+   return 0;
+}
+给定n，找到所有的五位数、六位数，使得它们的和为n，而且从左边读和从右边读是一样的，一开始傻了以为1应该有输出，结果测试输出忘记删掉了还WA了一发
+#include<cstdio>
+#include<iostream>
+#include<algorithm>
+#include<cmath>
+#include<cstring>
+#include<vector>
+#include<string>
+#include<queue>
+using namespace std;
+const int maxn = 15;
+const double pi = acos(-1.0);
+typedef long long ll;
+int n;
+int a[10];
+int judge(int x)
+{
+	int len = 0,sum = 0;
+	while(x)
+	{
+		a[len++] = x % 10;
+		sum += x % 10;
+		x /= 10;
+	}
+	//cout<<sum<<endl;
+	if(sum != n)return 0;
+
+	if(len % 2)
+	{
+		for(int i = 0,j = len - 1; i <= len / 2; i++, j--)
+		{
+			if(a[i] != a[j])
+			{
+			//	cout<<i<<" "<<j<<endl;
+				return 0;
+			}
+			
+		}
+		return 1;
+	}
+	else 
+	{
+		for(int i = 0,j = len - 1; i <= len / 2 - 1; i++,j--)
+		{
+			if(a[i] != a[j])
+			return 0;
+		}
+		return 1;
+	}
+}
+int main()
+{
+  
+   cin>>n;
+   for(int i = 10000; i <= 999999; i++)
+   {
+       if(judge(i))
+	   {
+	   	  cout<<i<<endl;
+   	   }   	
+   }
+   return 0;
+}
+杨辉三角形
+#include<cstdio>
+#include<iostream>
+#include<algorithm>
+#include<cmath>
+#include<cstring>
+#include<vector>
+#include<string>
+#include<queue>
+using namespace std;
+const int maxn = 15;
+const double pi = acos(-1.0);
+typedef long long ll;
+int n;
+int a[100][100];
+
+int main()
+{
+   int n;
+   cin>>n;
+   a[1][1] = 1;
+   cout<<1<<endl;
+   for(int i = 2; i <= n; i++)
+       for(int j = 1; j <= i; j++)
+       {
+          if(j == 1)
+		  {
+		  	 a[i][j] = 1;
+		  	 cout<<a[i][j];
+		  }
+		  else if(j == i){
+		  	a[i][j] = 1;
+		  	cout<<" "<<a[i][j]<<endl;
+		  }
+		  else 
+		  {
+	          a[i][j] = a[i - 1][j - 1] + a[i - 1][j];
+	          cout<<" "<<a[i][j];
+		  }   	
+	   }
+   return 0;
+}
+
+问题描述　　给定一个n*n的棋盘，棋盘中有一些位置不能放皇后
+。现在要向棋盘中放入n个黑皇后和n个白皇后，使任意的两个黑皇后都不在同一行、同一列或同一条对角线上，任意的两个白皇后都不在同一行、同一列或同一条对角线上。
+问总共有多少种放法？n小于等于8。
+输入格式　　
+输入的第一行为一个整数n，表示棋盘的大小。
+接下来n行，每行n个0或1的整数，如果一个整数为1，表示对应的位置可以放皇后，如果一个整数为0，表示对应的位置不可以放皇后。
+输出格式　　输出一个整数，表示总共有多少种放法。
+样例输入
+4
+1 1 1 1
+1 1 1 1
+1 1 1 1
+1 1 1 1
+样例输出
+2
+样例输入
+4
+1 0 1 1
+1 1 1 1
+1 1 1 1
+1 1 1 1
+样例输出
+0
+
+就是按列枚举看之前使用过的行对角线有没有不符合的，不同的状态代表两个棋子
+#include<cstdio>
+#include<iostream>
+#include<algorithm>
+#include<cmath>
+#include<cstring>
+#include<vector>
+#include<string>
+#include<queue>
+using namespace std;
+const int maxn = 15;
+const double pi = acos(-1.0);
+typedef long long ll;
+int a[15][15];
+int n,sum;
+int p(int x,int y,int s)
+{
+	for(int i = x - 1; i >= 0; i--)
+	{
+		if(a[i][y] == s)
+		  return 0;
+	}
+	for(int i = x - 1,j = y - 1; i >= 0 && j >= 0; i--,j--)
+	{
+		if(a[i][j] == s)
+		  return 0;
+	}
+	for(int i = x - 1, j = y + 1; i >= 0 && j < n; i--,j++)
+	{
+		if(a[i][j] == s)
+		  return 0;
+	}
+	return 1;
+}
+void dfs(int x,int s)
+{
+	if(x == n)
+	{
+		if(s == 2)dfs(0,3);
+		else sum++;
+		return ;
+	}
+	for(int i = 0; i < n; i++)
+	{
+		if(a[x][i] != 1)continue;
+	    if(p(x,i,s))a[x][i] = s;
+	    else continue;
+		dfs(x + 1,s);
+		a[x][i] = 1;
+	}
+	return ;   
+}
+int main()
+{
+   cin>>n;
+   for(int i = 0; i < n; i++)
+       for(int j = 0; j < n; j++)
+       {
+           cin>>a[i][j];   	
+	   }
+    sum = 0;	   
+	dfs(0,2);
+	cout<<sum<<endl;
+   return 0;
+}
+
+求1-N里面，任意三个数的最小公倍数的最大值
+用贪心求解，最小公倍数的最大值在三个数两两互质的时候求得，此时为三个数的乘积。
+取n,n - 1,n - 2,三个相邻的数最左边和最右边的两个数不一定互质，如果n为奇数，n和n-2如果有一个的因子为3，但是变化范围小于3所以不存在大于1的因子
+如果n为偶数，有两个数的因子一定为2，改变一个偶数为奇数，将最小的那个偶数改为奇数，n,n-1,n-3如果n为3的倍数，n-3也一定为3的倍数，如果不为3的倍数
+就是这三个数的乘积
+如果n能被3整除，再将最大的偶数改为奇数，所以三个数为n-1,n-2,n-3
+#include<cstdio>
+#include<iostream>
+#include<algorithm>
+using namespace std;
+typedef long long ll;
+int main()
+{
+	ll n,ans;
+	cin>>n;
+	if(n == 1)
+	{
+		ans = 1;
+	}
+	else if(n == 2) 
+	{
+		ans = 2;
+	}
+	else 
+	{
+		if(n % 2)
+	{
+		ans = n * (n - 1) * (n - 2); 
+	}
+	else 
+	{
+		if(n % 3)ans = n * (n - 1) * (n - 3);
+		else ans = (n - 1) * (n - 2) * (n - 3);
+	}
+	}
+	
+	cout<<ans<<endl;
+	return 0;
+}
+
+//以j开头长度为i的K好数，注意j不为0
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+const long long INFLL = 0x3f3f3f3f3f3f3f3f;
+const int mod = 1e9 + 7;
+ll dp[110][110];
+int main()
+{
+    int k,l;
+    cin>>k>>l;
+    memset(dp,0,sizeof(dp));
+    for(int i = 0; i < k; i++)
+        dp[1][i] = 1;
+    for(int i = 2; i <= l; i++)
+        for(int j = 0; j < k; j++)
+            for(int m = 0; m < k; m++)
+    {
+        if(m != j - 1 && m != j + 1)
+        {
+            dp[i][j] = (dp[i][j] % mod + dp[i - 1][m] % mod) % mod;
+        }
+    }
+    ll ans = 0;
+    for(int i = 1; i < k; i++)
+        ans = (ans % mod + dp[l][i] % mod) % mod;
+    cout<<ans<<endl;
+    return 0;
+}
+
+//以j结尾长度为i的K好数，注意j在长度为1的时候不为0，只是少了全为0的一种情况，其余的都在所以直接输出即可，还是以j开头好理解
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+const long long INFLL = 0x3f3f3f3f3f3f3f3f;
+const int mod = 1e9 + 7;
+ll dp[110][110];
+int main()
+{
+    int k,l;
+    cin>>k>>l;
+    memset(dp,0,sizeof(dp));
+    for(int i = 1; i < k; i++)
+        dp[1][i] = 1;
+    for(int i = 2; i <= l; i++)
+        for(int j = 0; j < k; j++)
+            for(int m = 0; m < k; m++)
+    {
+        if(m != j - 1 && m != j + 1)
+        {
+            dp[i][j] = (dp[i][j] % mod + dp[i - 1][m] % mod) % mod;
+        }
+    }
+    ll ans = 0;
+    for(int i = 0; i < k; i++)
+        ans = (ans % mod + dp[l][i] % mod) % mod;
+    cout<<ans<<endl;
+    return 0;
+}
+
+算法训练 结点选择  
+有一棵 n 个节点的树，树上每个节点都有一个正整数权值。如果一个点被选择了，那么在树上和它相邻的点都不能被选择。求选出的点的权值和最大是多少？
+树形DP
+val[i][0]代表第i个节点不取的最大权值和,val[i][1]代表第i个节点取的最大权值和，从根节点开始遍历，如果当前节点不取，子节点可以取可以不取，
+如果当前节点取，子节点一定不取。第i个节点本身的值为val[i][1]的初值，遍历的过程中只要更新子节点的值使得最大就行
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+const long long INFLL = 0x3f3f3f3f3f3f3f3f;
+const int mod = 1e9 + 7;
+const int N = 1e5 + 10;
+vector<int>vec[N];
+int a[N];
+int n;
+int val[N][2];
+void dfs(int u,int v)
+{
+	for(int i = 0; i < vec[u].size(); i++)
+	{
+		int k = vec[u][i];
+		if(k != v)
+		{
+			dfs(k,u);
+		    val[u][0] += (max(val[k][1],val[k][0]));
+			val[u][1] += val[k][0];	
+		}
+	}
+}
+int main()
+{
+	cin>>n;
+	for(int i = 1; i <= n; i++)
+	    cin>>a[i];
+	for(int i = 0; i < n - 1; i++)
+	{
+		int x,y;
+		cin>>x>>y;
+		vec[x].push_back(y);
+		vec[y].push_back(x);
+	}
+	for(int i = 1 ;i <= n; i++)
+	   val[i][1] = a[i];
+    dfs(1,-1);
+    cout<<max(val[1][1],val[1][0])<<endl;
+	return 0;
+}
+
+//spfa求带负权的单源最短路
+#include<cstdio>
+#include<iostream>
+#include<queue>
+#include<cstring>
+using namespace std;
+const int maxn = 2e5 + 10;
+const int INF = 0x3f3f3f3f;
+int n,m,t;
+int head[maxn],dis[maxn];
+bool vis[maxn];
+queue<int>q;
+struct edge
+{
+	int from,next,to,w;
+}e[maxn];
+void add(int x,int y, int z)//链式前向星数据结构
+{
+	e[t].from = x;
+    e[t].w = z;
+	e[t].to = y;
+	e[t].next = head[x];//同一个顶点的上一条边
+	head[x] = t++;
+}
+void spfa(int s)
+{
+	memset(vis,0,sizeof(vis));
+	memset(dis,INF,sizeof(dis));
+	q.push(s);
+	dis[s] = 0;
+	while(!q.empty())
+	{
+	//	cout<<1<<endl;
+		int u = q.front();
+		q.pop();
+		vis[u] = 0;
+		for(int i = head[u]; i != -1; i = e[i].next)//更新和它相连的最短的边
+		{
+			int v = e[i].to;
+			if(dis[v] > dis[u] + e[i].w)
+			{
+				dis[v] = dis[u] + e[i].w;
+				if(!vis[v])
+				{
+					vis[v] = 1;
+					q.push(v);
+				}
+			}
+		}
+	}
+}
+int main()
+{
+	cin>>n>>m;
+	t = 0;
+	memset(head,-1,sizeof(head));
+	for(int i = 0; i < m; i++)
+	{
+		int x,y,z;
+		cin>>x>>y>>z;
+		add(x,y,z);
+	}
+	/*for(int i = 0; i < m; i++)
+	{
+		cout<<e[i].w<<endl;
+	}*/
+	spfa(1);
+	for(int i = 2;  i <= n; i++)
+	{
+		cout<<dis[i]<<endl;
+	}
+	return 0;
+}
+
+安慰奶牛
+题意很迷，就是选一个节点，然后从这个节点开始遍历所有的节点一遍，最后回到起点，每个点和边都有权值，问这条路上最小的权值和是多少
+由题意，保留n-1条路然后还得联通，所以只能是最小生成树，怎么建树呢，通过遍历所有的节点回到起点发现，每条边经过两次，每个点的权值和和它的度是一样的
+所以我们将每条边的权值变为2 * w + v1 + v2，这样就转化成为了最小生成树问题，生成的最小生成树是一样的，跑一个kruskal算法，再选一个权值最小的顶点就可以
+
+#include<cstdio>
+#include<iostream>
+#include<algorithm>
+using namespace std;
+const int maxn = 1e5 + 10;
+struct edge
+{
+	int from, to,w; 
+}e[maxn];
+bool cmp(struct edge a,struct edge b)
+{
+	return a.w < b.w;
+}
+int v[10010],pre[10010];
+int n,p;
+int findd(int x)
+{
+	if(pre[x] == x)
+	   return x;
+	return pre[x] = findd(pre[x]);
+}
+int kruskal()
+{
+	for(int i = 1; i <= n; i++)
+	    pre[i] = i;
+	sort(e,e + p,cmp);
+	int ans = 0;
+	for(int i = 0; i < p; i++)
+	{
+		int u = findd(e[i].from);
+		int v = findd(e[i].to);
+		if(u != v)
+		{
+			pre[u] = v;
+			ans += e[i].w;
+		}
+	}
+	return ans;
+}
+int main()
+{
+	
+	cin>>n>>p;
+	int minx = 1010;
+	for(int i = 1; i <= n; i++)
+	{
+		cin>>v[i];
+		minx = min(minx,v[i]);
+	}
+	for(int i = 0; i < p; i++)
+	{
+		int x,y,z;
+		cin>>x>>y>>z;
+		e[i].from = x;
+		e[i].to = y;
+		e[i].w = 2 * z + v[x] + v[y];
+	}
+	cout<<kruskal() + minx<<endl;
+	return 0;
+}
+
+操作格子：线段树模板，单点更新操作、询问一段区间的最大值和和
+#include<cstdio>
+#include<algorithm>
+using namespace std;
+const int maxn = 1e5 + 10;
+const int INF = 0x3f3f3f3f;
+typedef struct node
+{
+	int l,r;
+	int sum,max;
+}node;
+node a[maxn * 4];
+int v[maxn];
+int ls(int p)
+{
+	return p << 1;
+}
+ int rs(int p)
+{
+	return p << 1|1;
+}
+void push_up(int p)
+{
+   a[p].sum = a[ls(p)].sum + a[rs(p)].sum;
+   a[p].max = max(a[ls(p)].max,a[rs(p)].max);	
+}
+void build(int p,int l,int r)
+{
+	a[p].l = l;
+	a[p].r = r;
+	if(l == r)
+	{
+		a[p].sum = v[l];
+		a[p].max = v[l];
+		return;
+	}
+	int mid = (l + r) >> 1;
+	build(ls(p),l,mid);
+	build(rs(p),mid + 1,r);
+	push_up(p);
+}
+void update(int p,int id,int x)
+{
+     if(a[p].l == id && a[p].r == id)
+     {
+		 	a[p].sum = x;
+		 	a[p].max = x;
+		 return;
+	 }
+	 int mid = (a[p].l + a[p].r) >> 1;
+	 if(id <= mid)
+	 update(ls(p),id,x);
+	 else 
+	 update(rs(p),id,x);
+	 push_up(p);
+}
+
+int query1(int p,int l,int r)
+{
+	if(a[p].l == l && a[p].r == r)
+	{
+		return a[p].max; 
+	}
+	int mid = (a[p].l + a[p].r) >> 1;
+	if(r <= mid)
+	return query1(ls(p),l,r);
+	else if(l > mid)
+	return query1(rs(p),l,r);
+	else return max(query1(ls(p),l,mid),query1(rs(p),mid + 1,r));
+}
+
+int query2(int p,int l,int r)
+{
+	if(a[p].l == l && a[p].r == r)
+	{
+		return a[p].sum;
+	}
+	int mid = (a[p].l + a[p].r) >> 1;
+	if(r <= mid)
+	{
+		return query2(ls(p),l,r);
+	}
+	else if(l > mid)
+	{
+		return query2(rs(p),l,r);
+	}
+	else return query2(ls(p),l,mid) + query2(rs(p),mid + 1,r);
+}
+
+int main()
+{
+	int n,m,res;
+	scanf("%d%d",&n,&m);
+	for(int i = 1; i <= n; i++)
+	    scanf("%d",&v[i]);
+	build(1,1,n);
+	while(m--)
+	{
+		int p,x,y;
+		scanf("%d%d%d",&p,&x,&y);
+		if(p == 1)
+		{
+		   	update(1,x,y);
+		}
+		else if(p == 2)
+		{
+			res = query2(1,x,y);
+			printf("%d\n",res);
+		}
+		else 
+		{
+			res = query1(1,x,y);
+			printf("%d\n",res);
+		}
+	}
+	
+算法提高 Problem S4: Interesting Numbers 加强版  
+http://blog.csdn.net/liangzhaoyang1/article/details/68483702 推导公式
+2一定在首位，然后之后n-1位假设x位是{0，1}，n - 1 - x位是{3,2}，x位中有x-1种情况，因为0一定在1的前面，n-1-x位中有n-1-x种情况，因为2已经在首位了
+然后枚举x位从2到n-1所有情况，求和，化简，得到公式再用快速幂，注意取模运算负数需要加上模，如果一定是正数的话。
+#include<cstdio>
+#include<cmath>
+#include<iostream>
+using namespace std;
+typedef long long ll;
+const ll mod = 1000000007;
+ll bigpow(ll a,ll b)
+{
+	ll tmp = a,ans = 1;
+	while(b > 0)
+	{
+		if(b & 1)ans = ans * tmp % mod;
+		b >>= 1;
+		tmp = tmp * tmp % mod; 
+	}
+	return ans;
+}
+int main()
+{
+    ll n;
+    cin>>n;
+    n--;
+    ll ans; 
+    ans = ((n % mod) * (n % mod)) % mod;
+    ans = ((ans - 3 * n  % mod) + mod)% mod;
+    ll x = bigpow(2LL,n - 2);
+    ans = (ans * x ) % mod;
+    ans = (ans + n % mod) % mod;
+    cout<<ans<<endl;
+	return 0;
+}
+
+c++_ch04_02_修正版
+非常棒的一道题，复习了c++的知识，主要需要写拷贝构造函数，然后print函数转换时间，从秒到分到小时，分大于等于60和小于0讨论，分和秒小于0就借前面的一位
+不断加60，之前再减，大于等于60前一位就直接加上倍数本位再取余数，最后小时负数就不断加直到大于0再对24取余，大于等于24就直接取余就好
+
+#include<cstdio>
+#include<cmath>
+#include<iostream>
+using namespace std;
+typedef long long ll;
+class Time
+{
+	public:
+		Time(int h,int m,int r);
+		void print();
+		void reset();
+		void adv(int h,int m,int r);
+	private:
+		int hh,mm,rr;
+};
+Time::Time(int h,int m,int r)
+{
+	hh = h;
+	mm = m;
+	rr = r;
+}
+void Time::print()
+{
+	if(rr >= 60 || rr < 0)
+	{
+		if(rr >= 60)
+		{
+			mm += rr / 60;
+			rr %= 60;
+		}
+		else 
+		{
+			int cnt = 0;
+			while(rr < 0)
+			{
+				mm--;
+				rr += 60;
+			}
+			rr %= 60;
+		}
+	}
+	if(mm >= 60 || mm < 0)
+	{
+		if(mm >= 60)
+		{
+			hh += mm / 60;
+			mm %= 60;
+		}
+		else 
+		{
+			int cnt = 0;
+			while(mm < 0)
+			{
+				hh--;
+				mm += 60;
+			}
+			mm %= 60;
+		}
+	}
+	if(hh >= 24 || hh < 0)
+	{
+		if(hh >= 24)
+		{
+			hh %= 24;
+		}
+		else 
+		{
+			while(hh < 0)
+			{
+				hh += 24;
+			}
+			hh %= 24;
+		}
+	}
+	printf("%02d:%02d:%02d\n",hh,mm,rr);
+}
+void Time::adv(int h,int m,int r)
+{
+	hh += h;mm += m;rr += r; 
+}
+void Time::reset()
+{
+	hh = 0;mm = 0;rr = 0;
+}
+int main()
+{
+    int a,b,c,d,e,f,g;
+    cin>>a>>b>>c>>d>>e>>f;
+    Time t(a,b,c);
+    t.print();
+	t.adv(d,e,f);
+	t.print();
+	t.reset();
+	t.print();
+	return 0;
+}
+
+递推求值
+矩阵快速幂，先根据初始条件和递推关系式，确定初始矩阵和最终矩阵，然后根据递推关系求得转移矩阵
+再带入矩阵快速幂中求得转移矩阵结合初值得到最终结果
+#include<cstdio>
+#include<cmath>
+#include<iostream>
+#include<cstring>
+using namespace std;
+typedef long long ll;
+const int mod = 99999999; 
+struct matrix
+{
+	ll a[8][8];
+};
+ll n;//n是长整形 
+matrix tmp ={
+	    0,1,1,0,0,0,0,0,
+		1,0,0,1,0,0,0,0,
+		0,0,0,0,1,0,0,0,
+		0,0,0,0,0,1,0,0,
+		2,3,0,0,0,0,0,0,
+		0,2,0,0,0,0,0,0,
+		0,1,0,0,0,0,1,0,
+		1,0,0,0,0,0,0,1,  
+     };
+matrix res;
+struct matrix multi(matrix x,matrix y)
+{
+	matrix t;
+	memset(t.a,0,sizeof(t.a));//一定要初始化 
+	for(int i = 0; i < 8; i++)
+	   for(int j = 0; j < 8; j++)
+	      for(int k = 0; k < 8; k++)
+	      {
+	      	 t.a[i][j] += x.a[i][k] * y.a[k][j] % mod;//先加再取模 
+	      	 t.a[i][j] %= mod;
+		  }
+	return t;
+}
+int main()
+{
+	
+	cin>>n;
+	memset(res.a,0,sizeof(res.a));//一定要初始化，不然就是随机数 
+	if(n == 1)
+	{
+		cout<<2<<endl<<3<<endl;
+	}
+	else if(n == 2)
+	{
+		cout<<1<<endl<<4<<endl;
+	}
+	else if(n == 3)
+	{
+		cout<<6<<endl<<5<<endl;
+	}
+	else 
+	{
+		n -= 3;//注意第一个矩阵的含义 
+		ll f[8] = {6,5,1,4,2,3,3,5};//前三项赋值 
+		for(int i = 0; i < 8; i++)
+		{
+			res.a[i][i] = 1;
+		}	
+		while(n)//类似于大数模幂 
+		{
+			//cout<<1<<endl;
+		   if(n & 1)res = multi(res,tmp);
+		   n >>= 1;
+		   tmp = multi(tmp,tmp);	
+		}
+		/*for(int i = 0; i < 8; i++)
+		{
+			for(int j = 0; j < 8; j++)
+		    printf("%lld ",tmp.a[i][j]);
+		    printf("\n");
+		}*/
+		ll sum1 = 0,sum2 = 0;
+		/*for(int i = 0; i < 8; i++)
+		{
+			for(int j = 0; j < 8; j++)
+		    printf("%lld ",res.a[i][j]);
+		    printf("\n");
+		}*/
+		    
+		for(int i = 0; i < 8; i++)
+		{
+			sum1 += f[i] * res.a[i][0] % mod;//别忘了取模 
+			sum1 %= mod;
+			sum2 += f[i] * res.a[i][1] % mod;
+			sum2 %= mod;
+		}
+		cout<<sum1<<endl<<sum2<<endl;
+	}
+	return 0;
+}
