@@ -1,0 +1,352 @@
+F
+//题意：给了你n种食材，只允许k种放在外面,如果要超过k种必须开冰箱门，把外面的一种拿回去再拿出来一种，问最少需要开冰箱门多少次
+//先交换排在后面的食材，如果这个食材之后不用了就赋成无穷大
+#include<cstdio>
+#include<cstring>
+#include<algorithm>
+#include<queue>
+#include<map>
+using namespace std;
+const int maxn = 100010;
+const int INF = 0x3f3f3f3f;
+typedef pair<int,int>P;
+priority_queue<P>que;
+map<int,int>ma;
+int a[maxn],last[maxn],last1[maxn],ok[maxn];
+int main()
+{
+    int t;
+    scanf("%d",&t);
+    while(t--)
+    {
+        while(!que.empty())que.pop();
+        ma.clear();
+        memset(last,INF,sizeof(last));
+        memset(last1,INF,sizeof(last1));
+        memset(ok,0,sizeof(ok));
+        int n,k;
+        scanf("%d%d",&n,&k);
+        for(int i = 0; i < n; i++)
+        {
+            scanf("%d",&a[i]);
+            ma[a[i]] = 1;
+        }
+        int now = 0;
+        for(map<int,int>::iterator i = ma.begin(); i != ma.end(); i++)//由于标号有1e9，食材有1e5，所以必须离散化，才可以放到数组里存
+        {
+            i->second = now++;
+        }
+        for(int i = 0; i < n; i++)
+        {
+            a[i] = ma[a[i]];
+        }
+        for(int i = n - 1; i >= 0; i--)//last数组存放a[i]最后一次出现的下标,last1将每一个值对应于当前的位置
+        {
+            last[i] = last1[a[i]];
+            last1[a[i]] = i;
+        }
+        int nowk = 0,ans = 0;
+        for(int i = 0; i < n; i++)
+        {
+            if(ok[a[i]])//ok数组存放a[i]是否在外面
+            {
+                que.push(make_pair(last[i],i));//在外面的话更新一下这个的最后出现的位置
+                continue;
+            }
+            if(nowk < k)
+            {
+                nowk++;//记录是否到达第k个
+                que.push(make_pair(last[i],i));//将i和a[i]最后出现的下标形成一对放到优先队列里
+                ok[a[i]] = 1;
+                ans++;
+            }
+            else//超过k种的另外食材
+            {
+                P p;
+                p = que.top();//优先队列筛选出最后出现的一个
+                que.pop();//从队列弹出
+                ok[a[i]] = 1;//当前食材放到外面
+                ok[a[p.second]] = 0;//弹出的食材被放回去
+                que.push(make_pair(last[i],i));//放到外面的队列更新
+                ans++;
+            }
+        }
+        printf("%d\n",ans);
+    }
+    return 0;
+}
+G
+找有多少个子串（连续的）能保证子串的和能被这个子串的每一个数整除n2logn需要优化一下，注意乘法会爆long long
+#include<cstdio>
+#include<algorithm>
+using namespace std;
+const int maxn = 2010;
+typedef long long ll;
+ll a[maxn];
+int main()
+{
+    int t;
+    scanf("%d",&t);
+    while(t--)
+    {
+        int n;
+        scanf("%d",&n);
+        for(int i = 0; i < n; i++)
+            scanf("%I64d",&a[i]);
+        int ans = 0;
+        for(int i = 0; i < n; i++)
+        {
+            ll sumlcm = 1;
+            ll now = 0;
+            ll maxnum = 10000000000000LL;
+            for(int j = i; j < n; j++)//求最大公约数
+            {
+                int g = __gcd(sumlcm,a[j]);
+                if(sumlcm / g > 1.0 * maxnum / a[j])break;//double存的位数比long long 多，而且要除的关系，直接乘法会爆
+                sumlcm = sumlcm  / g * a[j];//先除再乘不然会爆
+                now += a[j];
+                if(now % sumlcm == 0)
+                    ans++;
+            }
+        }
+        printf("%d\n",ans);
+    }
+    return 0;
+}
+J  题意：比赛的时候没读懂就开始做，完全理解偏了，就是将一个含有空格的字符串分割成多段长度相等的子串，但是不能分割单词，空格忽略
+#include<cstdio>
+#include<algorithm>
+#include<cstring>
+using namespace std;
+const int maxn = 100010;
+const int INF = 0x3f3f3f3f;
+typedef long long ll;
+char s[maxn];
+int len;
+int check(int x)//枚举长度即可，因为长度乘以分割的段数等于1e5，肯定不会超时
+{
+    int i = 0;
+    while(i < len)
+    {
+        i += x;
+        if(i > len)return 0;//分割的段数每次落到空格的位置
+        if(s[i] != ' ')
+            return 0;
+        i++;
+    }
+    return 1;
+}
+void solve()
+{
+    for(int i = 1; i < len; i++)
+    {
+        if(check(i))
+        {
+            printf("YES\n");
+            return;
+        }
+    }
+    printf("NO\n");//注意检查所有都没有这样的子串才返回NO
+    return;
+}
+int main()
+{
+    int t;
+    scanf("%d",&t);
+    getchar();
+    while(t--)
+    {
+        gets(s);
+        //printf("%s",s);
+        len = strlen(s);
+        s[len] = ' ';
+        //s[len + 1] = '\0';
+        solve();
+    }
+    return 0;
+}
+
+K 题意：给了一组数，求不相交的两个串的所求的值的差的绝对值最大值
+方法：求前缀和，处理出从左边到每个数的最大值，最小值，从右边到每个数的最大值，最小值，再找差的绝对值最大的那个
+#include<cstdio>
+#include<algorithm>
+#include<cstring>
+#include<cmath>
+using namespace std;
+const int maxn = 100010;
+const long long INFLL = 0x3f3f3f3f3f3f3f3fLL;
+typedef long long ll;
+ll a[maxn],mxl[maxn],mil[maxn],mxr[maxn],mir[maxn],sumx[maxn],sumy[maxn];
+int main()
+{
+    int t;
+    scanf("%d",&t);
+    while(t--)
+    {
+        int n;
+        scanf("%d",&n);
+        for(int i = 1; i <= n; i++)
+            scanf("%I64d",&a[i]);
+        memset(mxl,200,sizeof(mxl));
+        memset(mxr,200,sizeof(mxr));
+        memset(mil,63,sizeof(mil));
+        memset(mir,63,sizeof(mir));
+        sumx[0] = sumy[0] = 0;
+        //printf("%I64d\n%I64d\n",mxl[0],mil[0]);
+        for(int i = 1; i <= n; i++)//处理出来前缀和，可能有两种情况，分别是+-+-...-+-+...
+        {
+            sumx[i] = sumx[i - 1] + (i % 2 == 1? a[i]:-a[i]);
+            sumy[i] = -sumx[i];
+        }
+//        for(int i = 1; i <= n; i++)
+//            printf("%d ",sumx[i]);
+//        printf("\n");
+        ll mx = 0,mi = 0;//初始值看最极限情况就行
+        for(int i = 1; i <= n; i++)//mxl[i]表示从左边到这个点的最大值，本循环包含了这个点，减去的必须为奇数的项，因为要保证减去后的一串第一个数为正
+        {
+            mxl[i] = sumx[i] - mi;
+            mil[i] = sumx[i] - mx;
+            if(i % 2)
+            {
+                mx = max(mx,sumx[i - 1]);
+                mi = min(mi,sumx[i - 1]);
+            }
+        }
+        mx = sumy[1];mi = sumy[1];
+        for(int i = 2; i <= n; i++)//和上面那个类似，只是是第二种情况-+-+...
+        {
+            mxl[i] = max(mxl[i],sumy[i] - mi);
+            mil[i] = min(mil[i],sumy[i] - mx);
+            if(i % 2 == 0)
+            {
+                mx = max(mx,sumy[i - 1]);
+                mi = min(mi,sumy[i - 1]);
+            }
+        }
+        for(int i = 2; i <= n; i++)//更新出来到i（不一定包含i）之前的最大最小子串值
+        {
+            mxl[i] = max(mxl[i - 1],mxl[i]);
+            mil[i] = min(mil[i - 1],mil[i]);
+        }
+        mx = sumx[n];mi = sumx[n];
+        for(int i = n; i >= 1; i--)//mxr[i]表示从右边开始到i的最大值，由于存的是前缀和，维护到i前缀和最大的，减去i前面的前缀和就是i右边的最大值
+        {
+            mx = max(mx,sumx[i]);
+            mi = min(mi,sumx[i]);
+            if(i % 2)
+            {
+                mxr[i] = max(mxr[i],mx - sumx[i - 1]);
+                mir[i] = min(mir[i],mi - sumx[i - 1]);
+            }
+        }
+        mx = sumy[n];mi = sumy[n];
+        for(int i = n; i >= 1; i--)//第二种情况，-+-+...
+        {
+           mx = max(mx,sumy[i]);
+           mi = min(mi,sumy[i]);
+           if(i % 2 == 0)
+           {
+               mxr[i] = max(mxr[i],mx - sumy[i - 1]);
+               mir[i] = min(mir[i],mi - sumy[i - 1]);
+           }
+        }
+        for(int i = n; i >= 1; i--)//更新出从右边到i的最大最小值
+        {
+            mxr[i] = max(mxr[i],mxr[i + 1]);
+            mir[i] = min(mir[i],mir[i + 1]);
+        }
+        ll ans = -1;
+        for(int i = 1; i < n; i++)//遍历每一个点的左右两边，维护最大值
+        {
+            ans = max(ans,abs(mxl[i] - mir[i + 1]));
+            ans = max(ans,abs(mil[i] - mxr[i + 1]));
+        }
+        printf("%I64d\n",ans);
+    }
+    return 0;
+}
+
+M 题意：给了你一些点之间的距离，要求还原这些点
+#include<cstdio>
+#include<algorithm>
+#include<cstring>
+#include<cmath>
+using namespace std;
+const int maxn = 1000010;
+const long long INFLL = 0x3f3f3f3f3f3f3f3fLL;
+typedef long long ll;
+int a[maxn],d[2000],ans[200];
+int n,m;
+int dfs(int x)
+{
+    if(x == n + 1)
+    {
+        sort(ans + 1, ans + n + 1);
+        for(int i = 1; i <= n; i++)
+        {
+            if(i == 1)printf("%d",ans[i]);
+            else printf(" %d",ans[i]);
+        }
+        printf("\n");
+        return 1;
+    }
+    for(int i = m; i >= 1 ; i--)//这里从大到小找到第一个不为0，因为距离有可能为0，不能为距离是0或者距离是最远的点，已经有了
+    {
+        if(a[d[i]])
+        {
+            ans[x] = d[i];//假设这个点就是d[i]
+            for(int j = 1; j < x; j++)//看一下已知的点和它的距离有没有
+            {
+                a[abs(ans[x] - ans[j])]--;
+            }
+            int flag = 1;
+            for(int j = 1; j < x; j++)
+            {
+                if(a[abs(ans[x] - ans[j])] < 0)
+                    flag = 0;
+            }
+            if(flag && dfs(x + 1))return 1;//有就继续往下找，找到第一个结束
+            for(int j = 1; j < x; j++)//还原回来
+                a[abs(ans[x] - ans[j])]++;
+
+            ans[x] = ans[2] - d[i];//找到和最远点的距离为点，操作同上
+            for(int j = 1; j < x; j++)
+            {
+                a[abs(ans[x] - ans[j])]--;
+            }
+            flag = 1;
+            for(int j = 1; j < x; j++)
+            {
+                if(a[abs(ans[x] - ans[j])] < 0)
+                    flag = 0;
+            }
+            if(flag && dfs(x + 1))return 1;
+            for(int j = 1; j < x; j++)
+                a[abs(ans[x] - ans[j])]++;
+            return 0;
+        }
+    }
+
+}
+int main()
+{
+    int t;
+    scanf("%d",&t);
+    while(t--)
+    {
+        scanf("%d",&n);
+        m = n * (n - 1) / 2;
+        for(int i = 1; i <= m; i++)
+            scanf("%d",&d[i]);
+        for(int i = 1; i <= m; i++)
+            a[d[i]]++;
+        sort(d + 1,d + 1 + m);
+        ans[1] = 0;
+        ans[2] = d[m];
+        a[d[m]]--;//最远的点已经用了，和这个点相关的距离就没有了
+        dfs(3);
+        for(int i = 1; i <= m; i++)
+            a[d[i]] = 0;
+    }
+    return 0;
+}
