@@ -1,0 +1,124 @@
+数理逻辑（一）数学课做减法
+注意 两个数都是0要特判 2e63用unsinged long long 正好装下
+#include<cstdio>
+#include<iostream>
+#include<string>
+#include<algorithm>
+using namespace std;
+typedef long long ll;
+int A[110];
+int main()
+{
+    ll a,b,c;
+    cin>>a>>b;
+    if((a >= 0 && b >= 0) || (a <= 0 && b <= 0))
+    {
+        c = a - b;
+         if(c == 0)
+         {
+             printf("0\n");
+             return 0;
+         }
+        if(c < 0)
+        {
+            printf("-");
+            c = -c;
+        }
+
+        int len = 0;
+        while(c)
+        {
+            A[len++] = c % 10;
+            c /= 10;
+        }
+        reverse(A,A + len);
+        int d = len % 3;
+        for(int i = 0; i < d; i++)
+            cout<<A[i];
+        for(int i = d; i < len; i+=3)
+        {
+            cout<<","<<A[i]<<A[i + 1]<<A[i + 2];
+        }
+    }
+    else
+    {
+        unsigned long long e,f,g;
+        if(a > 0 && b < 0)
+        {
+            f = a;g = -b;e = f + g;
+        }
+        else
+        {
+            f = -a;g = b;e = f + g;
+            printf("-");
+        }
+        int len = 0;
+         while(e)
+        {
+            A[len++] = e % 10;
+            e /= 10;
+        }
+        reverse(A,A + len);
+        int d = len % 3;
+        for(int i = 0; i < d; i++)
+            cout<<A[i];
+        for(int i = d; i < len; i+=3)
+        {
+            cout<<","<<A[i]<<A[i + 1]<<A[i + 2];
+        }
+    }
+    return 0;
+}
+
+
+/*****2018.4.21********/
+/***
+vijos 中位数
+题意：给定一个排列和一个数，寻找排列中有多少个长度为奇数的
+并且以该数为中位数的序列
+解法：
+通过从当前数的位置先向左遍历，遇到比它小的数应该放到该数的左边
+如果再遇到比它小的就继续往左边叠加，但是遇到比中位数大的数的话
+排序后就相当于抵消了一个左边的一个比中位数小的数，回退一个，就
+把所有比中位数大的情况都加在了比中位数小的身上，将对应抵消的较小数的数量加一个。
+然后从中位数向右边遍历，目标就是把对称的所有情况加上即可。所以
+从初始位置和之前相反的方向走即可，可以加上的情况为左右对称的奇数
+长度，注意在初始位置的情况为中位数及其左边产生的所有情况
+***/
+#include<cstdio>
+#include<iostream>
+using namespace std;
+const int maxn = 1e5 + 10;
+int a[maxn],res[2 * maxn];
+int main()
+{
+    int n,b,p;
+    cin>>n>>b;
+    for(int i = 1; i <= n; i++)
+    {
+        cin>>a[i];
+        if(a[i] == b)
+          p = i;
+    }
+    int mark = 0;
+    for(int i = p; i >= 1; i--)
+    {
+        if(a[i] > b)
+            mark--;
+        if(a[i] < b)
+            mark++;
+        res[maxn + mark]++;
+    }
+    mark = 0;
+    int sum = 0;
+    for(int i = p; i <= n; i++)
+    {
+        if(a[i] > b)
+          mark++;
+        if(a[i] < b)
+            mark--;
+        sum += res[maxn + mark];
+    }
+    cout<<sum<<endl;
+    return 0;
+}

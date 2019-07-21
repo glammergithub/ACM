@@ -1,0 +1,305 @@
+计算器的改良
+这道题实在太坑了
+题意很简单就是给了一个含一个未知数的等式，求这个未知数的值
+思路也很快，就是先找到等号，然后左右两边，先求一下所有的系数，再求所有的常数值
+找系数的时候，先找到字母，然后从字母向前找，直到不是数字的符号，注意如果找到了最开头，先判断有没有系数，没有的话就是加一个，然后有系数的话就直接加上
+系数，没找到头还得判断是否有系数，再判断系数前的符号，将所有的系数和未知量赋值。还要注意求系数的时候是从左边往右边算，还有isdigit()函数有毒，慎用
+右边也是从等号开始向右找，找未知量（也有可能没有），往前找系数直到不是数字为止，如果是等号，判断有没有系数，没有就直接减一，否则减系数。然后如果不是
+等号，判断是否有系数，没有的话根据符号判断加减一，有的话根据符号加减系数。因为在左边，符号是相反的
+然后数字的话是根据没有标记过的符号向前找，一直找所有的数字直到找到不是数字为止，如果找到了开头就直接加，如果前面有符号根据符号加减系数，同理右边也是
+注意，为了让最后一个数字识别出来，需要再最后加上一个符号，这里我加了正号
+#include<cstdio>
+#include<queue>
+#include<iostream>
+#include<cstring>
+#include<algorithm>
+#include<map>
+using namespace std;
+const int maxn = 105050;
+double eps = 0.00000001;
+typedef long long ll;
+char s[maxn];
+int flag[maxn];
+int main()
+{
+    scanf("%s",s);
+    int len = strlen(s);
+    s[len] = '+';
+    len++;
+    int mark1,cnt = 0,cnt_num = 0;
+    for(int i = 0; i < len; i++)
+    {
+        if(s[i] == '=')
+        {
+            mark1 = i;
+            break;
+        }
+    }
+    for(int i = 0; i < mark1; i++)
+    {
+        if(s[i] >= 'a' && s[i] <= 'z')
+        {
+            cnt = s[i] - 'a';
+            flag[i] = 1;
+            //cout<<cnt<<endl;
+            int tmp = i - 1,res = 0;
+            //cout<<tmp<<" "<<s[tmp] - '0'<<endl;
+            //cout<<isdigit(s[tmp] - '0')<<endl;
+            while(tmp >= 0 && s[tmp] >= '0' &&s[tmp] <= '9')
+                {
+                    flag[tmp] = 1;
+                    //res = res * 10 + s[tmp] - '0';
+                    tmp--;
+                }
+            for(int k = tmp + 1; k < i; k++)
+                res = res * 10 + s[k] - '0';
+              //  cout<<res<<endl;
+            if(tmp < 0)
+            {
+                if(res == 0)cnt_num = 1;
+                else
+                    cnt_num += res;
+            }
+            else
+            {
+               // flag[tmp] = 1;
+                if(res == 0)
+                {
+                    if(s[tmp] == '-')
+                        cnt_num--;
+                    else
+                        cnt_num++;
+                }
+                else
+                {
+                    if(s[tmp] == '-')
+                    {
+                        cnt_num -= res;
+                    }
+                    else cnt_num += res;
+                }
+            }
+        }
+    }
+   // cout<<cnt_num<<endl;
+    //cout<<isdigit('1' - '0')<<endl;
+    for(int i = mark1 + 1; i < len; i++)
+    {
+        if(s[i] >= 'a' && s[i] <= 'z')
+        {
+            cnt = s[i] - 'a';
+            flag[i] = 1;
+            int tmp = i - 1,res = 0;
+            //cout<<s[tmp] - '0'<<endl;
+            while(tmp >= 0 && s[tmp] >= '0' &&s[tmp] <= '9')
+                {
+                    //cout<<1<<endl;
+                    flag[tmp] = 1;
+                    //res = res * 10 + s[tmp] - '0';
+                    tmp--;
+                }
+             for(int k = tmp + 1; k < i; k++)
+                res = res * 10 + s[k] - '0';
+              //  cout<<endl;
+                //cout<<res<<endl;
+            if(s[tmp] == '=')
+            {
+               // flag[tmp] = 1;
+               if(res == 0)cnt_num--;
+               else cnt_num -= res;
+            }
+            else
+            {
+                if(res == 0)
+                {
+                    if(s[tmp] == '-')
+                   cnt_num ++;
+                   else
+                        cnt_num--;
+                }
+                else
+                {
+                    if(s[tmp] == '-')
+                    {
+                        cnt_num += res;
+                    }
+                    else cnt_num -= res;
+                }
+            }
+        }
+    }
+    //cout<<cnt_num<<endl;
+//    for(int i = 0; i < len; i++)
+//    {
+//        printf("%d ",flag[i]);
+//    }
+//    cout<<endl;
+    int num = 0;
+    for(int i = 0; i <= mark1; i++)
+    {
+        if(!flag[i] && (s[i] == '+' || s[i] == '-' || s[i] == '='))
+        {
+            int tmp = i - 1,res = 0;
+                while(tmp >= 0 && s[tmp] >= '0' &&s[tmp] <= '9')
+                {
+                    flag[tmp] = 1;
+                    //res = res * 10 + s[tmp] - '0';
+                    tmp--;
+                }
+             for(int k = tmp + 1; k < i; k++)
+                res = res * 10 + s[k] - '0';
+            if(tmp < 0)
+            {
+                num += res;
+            }
+            else
+            {
+                //flag[tmp] = 1;
+                if(s[tmp] == '-')
+                {
+                    num -= res;
+                }
+                else
+                {
+                    num += res;
+                }
+            }
+        }
+    }
+    //cout<<num<<endl;
+    for(int i = mark1 + 1; i < len; i++)
+    {
+        if(!flag[i] && (s[i] == '-' || s[i] == '+'))
+        {
+            int tmp = i - 1,res = 0;
+            while(tmp >= 0 && s[tmp] >= '0' &&s[tmp] <= '9')
+                {
+                    flag[tmp] = 1;
+                    //res = res * 10 + s[tmp] - '0';
+                    tmp--;
+                }
+             for(int k = tmp + 1; k < i; k++)
+                res = res * 10 + s[k] - '0';
+            if(s[tmp] == '=')
+            {
+                num -= res;
+            }
+            else
+            {
+                //flag[tmp] = 1;
+                if(s[tmp] == '-')
+                {
+                    num += res;
+                }
+                else if(s[tmp] == '+')
+                    num -= res;
+            }
+        }
+    }
+    //cout<<num<<endl;
+    //cout<<cnt<<endl;
+    printf("%c=",'a' + cnt);
+    double ans;
+    if(num == 0)ans = 0.0;
+    else ans = -1.0 * num / (double)cnt_num;
+    printf("%.3f\n",ans);
+    return 0;
+}
+//-x+12=x-x
+//20=w
+
+这道题也挺坑的其实，就是给了你一个数然后把这个数排序，大数减去小数，不够四位补0，求循环节，正常直接模拟就好，但是注意输入的数可能是循环节中的一个
+这样的话就只能从下一个开始，但是第一个既然是循环节里的就要一起输出
+#include<cstdio>
+#include<queue>
+#include<iostream>
+#include<cstring>
+#include<algorithm>
+#include<map>
+using namespace std;
+const int maxn = 105050;
+double eps = 0.00000001;
+typedef long long ll;
+ll c[100];
+ll mark[maxn];
+int main()
+{
+    ll a,tmp;
+    ll len,res;
+    ll marki ;
+
+    while(cin>>a)
+    {
+        memset(mark,0,sizeof(mark));
+        tmp = a;
+        len = 0;
+        marki = 0;
+        mark[len++] = a;
+        while(1)
+        {
+            int cnt = 0;
+            //tmp = a;
+            memset(c,0,sizeof(c));
+            while(tmp)
+            {
+                c[cnt++] = tmp % 10;
+                tmp /= 10;
+            }
+//        for(int i = 0; i < cnt; i++)
+//            printf("%d",c[i]);
+//        printf("\n");
+            sort(c,c + cnt);
+            ll res1 = 0,res2 = 0;
+            for(int i = cnt - 1; i >= 0; i--)
+            {
+                res1 = res1 * 10 + c[i] % 10;
+            }
+            //cout<<res1<<endl;
+            for(int i = 0; i < cnt; i++)
+            {
+                res2 = res2 * 10 + c[i] % 10;
+            }
+            //cout<<res2<<endl;
+            res = res1 - res2;
+            while(res < 1000)
+            {
+                if(res == 0)break;
+                res *= 10;
+            }
+           // cout<<res<<endl;
+            int flag = 0;
+            for(int i = 0; i < len; i++)
+            {
+                if(mark[i] == res)
+                {
+                    marki = i;
+                    flag = 1;
+                    break;
+                }
+            }
+            if(!flag)mark[len++] = res;
+            else
+            {
+                break;
+            }
+            tmp = res;
+        }
+        //int tt = 1;
+        cout<<mark[marki];
+        for(int i = marki + 1; i < len; i++)
+        {
+            if(mark[i] == res)
+            {
+                break;
+            }
+            else
+            {
+                cout<<" "<<mark[i];
+
+            }
+        }
+        cout<<endl;
+    }
+
+    return 0;
+}

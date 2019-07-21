@@ -1,0 +1,51 @@
+D题
+二分查找满足条件的最大值，注意本题的二分上下界，因为每次需要从三个不同的s里取所以每一个s不能大于t
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long LL;
+LL A,B,n,l,t,m;
+LL f(LL x)
+{
+    return A + (x - 1) * B;
+}
+bool judge(LL x)
+{
+    if(((f(l) + f(x)) * (x - l + 1) / 2) <= t * m)
+        return true;
+    else
+        return false;
+}
+int main()
+{
+    cin>>A>>B>>n;
+    for(int i = 1; i <= n; i++)
+    {
+        cin>>l>>t>>m;
+        if(f(l) > t)
+        {
+            printf("-1\n");
+        }
+        else
+        {
+            LL resl = l,resr = (t - A) / B + 1,pos;
+            //cout<<resl<<","<<resr<<endl;
+            while(resl <= resr)
+            {
+                LL mid = (resl + resr) / 2;
+               // cout<<mid<<endl;
+                if(judge(mid))
+                {
+                    resl = mid + 1;
+                    pos = mid;
+                }
+                else
+                {
+                    resr = mid - 1;
+                }
+            }
+            //printf("%lld\n",pos);
+            cout<<pos<<endl;
+        }
+    }
+    return 0;
+}
