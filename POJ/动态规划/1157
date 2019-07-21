@@ -1,0 +1,31 @@
+//状态转移，题意就是F种花放到V种花瓶中，每种花瓶只能放一种花，花必须按照先后顺序放到先后的花瓶中，每种花放到花瓶里有一个值，问怎么放能使得这F种花放到
+//瓶子中使得和最大，就是第i种花放到第j个瓶子中，第i-1种花能放到第i-1~第j-1种瓶子里，前面的由后面的状态转移过来，更新最大值
+#include<cstdio>
+#include<algorithm>
+#include<cstring>
+using namespace std;
+const int maxn = 110;
+const int INF = 0x3f3f3f3f;
+int a[maxn][maxn];
+int dp[maxn][maxn];
+int main()
+{
+    int f,v;
+    scanf("%d%d",&f,&v);
+    memset(dp,0,sizeof(dp));
+    for(int i = 1; i <= f; i++)
+        for(int j = 1; j <= v; j++)
+        {
+            scanf("%d",&a[i][j]);
+            dp[i][j] = -INF;
+        }
+    for(int i = 1; i <= f; i++)
+        for(int j = i; j <= v; j++)
+           for(int k = i - 1; k <= j - 1; k++)
+              dp[i][j] = max(dp[i][j],dp[i - 1][k] + a[i][j]);
+    int MAX = -INF;
+    for(int i = f; i <= v; i++)
+        MAX = max(MAX,dp[f][i]);
+    printf("%d\n",MAX);
+    return 0;
+}
