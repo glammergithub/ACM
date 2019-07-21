@@ -1,0 +1,64 @@
+//猴子选大王变式
+#include<stdio.h>
+#include<malloc.h>
+struct node
+{
+    int num;//猴子编号
+    struct node *next;//下一个猴子结点
+};
+struct node *p,*q,*head = NULL,*temp;
+ struct node *add(struct node *head, int en)//把猴子所有节点串成链表
+{
+    int i = 1;
+    while(i <= en)
+    {
+        q = (struct node*)malloc(sizeof(struct node));//当前猴子开辟的新节点
+        q->num = i;
+        if(head == NULL)//头结点
+        {
+            p = q;
+            head = p;
+        }
+        else
+        {
+            p->next = q;//p为上一个节点，q为当前节点
+            p = q;
+        }
+        i++;
+    }
+    p->next = head;//最后的节点指向头节点
+    return head;
+};
+struct node *play(int en,int d,struct node *head)//开始报数的函数
+{
+    int i;
+    p = head;
+    while(p->next != p)//直到剩下最后一个猴子为止
+    {
+        for(i = 1; i < d - 1; i++)//d为间隔宽度，p为节点指针，当p的下一个节点为删除的节点时候退出
+        {
+            p = p->next;
+        }
+        printf("%d ",p->next->num);//输出删除的节点
+        temp = p->next;//temp为删除的节点
+        p->next = temp->next;//删除的节点用它指向的下一个节点覆盖
+        p = p->next;//当前节点指针指向下一个开始报数的节点
+        //free(temp);
+    }
+    printf("%d\n",p->num);//输出最后一个节点
+    return NULL;
+};
+int main()
+{
+    int n;
+    scanf("%d",&n);
+    head = add(head,n);
+    p = head;
+//    for(int i = 1; i <= n; i++)
+//    {
+//        printf("%d\n",p->num);
+//        p = p->next;
+//    }
+    play(n,3,head);
+    return 0;
+}
