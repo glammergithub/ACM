@@ -1,0 +1,120 @@
+染色问题
+TJOJ 1001
+这道题就是DFS搜索，首先将有边的两个点标记，然后从第一个点开始，枚举每一个点，每一个点判断四种颜色是否能被染成功，判断标准就是找和这个点连接的所有边看有没有重复颜色
+如果有就不能染成这种颜色，如果成功了再找下一个点，返回之后再将这个点原先赋上的颜色清空，直到枚举到第n+1个点，说明染色成功就增加一种方案，至于为什么不会超时
+是因为有10个点，4种情况，最坏情况4^10，大概是1e6~1e7之间，不会超时*/
+#include<cstdio>
+#include<iostream>
+using namespace std;
+int mp[20][20];
+int color[20];
+int n,cnt;
+bool is_ok(int x,int y)
+{
+    for(int i = 1; i <= n; i++)
+    {
+        if(mp[i][x] == 1 && color[i] == y)
+            return false;
+    }
+    return true;
+}
+void dfs(int x)
+{
+    if(x > n)
+    {
+        cnt++;
+        return;
+    }
+    for(int i = 1; i <= 4; i++)
+    {
+        if(is_ok(x,i))
+        {
+          color[x] = i;
+          dfs(x + 1);
+          color[x] = 0;
+        }
+    }
+}
+int main()
+{
+    int m;
+    cin>>n>>m;
+    for(int i = 1; i <= m; i++)
+    {
+        int x,y;
+        cin>>x>>y;
+        mp[x][y] = mp[y][x] = 1;
+    }
+    dfs(1);
+    cout<<cnt<<endl;
+    return 0;
+}
+1850. 预言家困境
+这道题就是直接建立一个图两种颜色染色，分成狼人阵营和好人阵营。对应狼人指认的一定是好人，好人指认的是狼人
+将每一个好人和狼人配对，好人标记为1，狼人标记为2，预言家一定是好人。
+然后深度搜索，先把预言家赋值为1，然后对于每一个输入的好人身份，标记为1，找他对应匹配的
+狼人身份，标记为2，深度搜索下去直到所有的都被标记返回再继续找。对于每一个狼人身份同理。
+最后将标记的1和2分别对应输出就行*/
+#include<bits/stdc++.h>
+using namespace std;
+const int maxn = 5e5 + 10;
+vector<int>vec[maxn];
+vector<int>a,b;
+int vis[maxn];
+void dfs(int x,int y)
+{
+    if(vis[x])return;
+    vis[x] = y;
+    for(int i = 0; i < vec[x].size(); i++)
+    {
+        if(y == 1)
+          dfs(vec[x][i],2);
+        else
+          dfs(vec[x][i],1);
+    }
+}
+int main()
+{
+    int n,p,q;
+    cin>>n;
+    for(int i = 1; i < n; i++)
+    {
+        int x;
+        cin>>x;
+        vec[i].push_back(x);
+        vec[x].push_back(i);
+    }
+    dfs(n,1);
+    cin>>p;
+    while(p--)
+    {
+        int x;
+        cin>>x;
+        dfs(x,1);
+    }
+    cin>>q;
+    while(q--)
+    {
+        int x;
+        cin>>x;
+        dfs(x,2);
+    }
+    for(int i = 1; i < n; i++)
+    {
+        if(vis[i] == 1)a.push_back(i);
+        else if(vis[i] == 2) b.push_back(i);
+    }
+    printf("%d",a.size());
+    for(int i = 0; i < a.size(); i++)
+    {
+        printf(" %d",a[i]);
+    }
+    printf("\n");
+    printf("%d",b.size());
+    for(int i = 0; i < b.size(); i++)
+    {
+        printf(" %d",b[i]);
+    }
+    printf("\n");
+    return 0;
+}
