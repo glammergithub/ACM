@@ -1,0 +1,32 @@
+//从外向内环，如果从内向外环就改一下初始值和while循环值就好
+#include<stdio.h>
+#include<string.h>
+using namespace std;
+const int maxn=10;
+int a[maxn][maxn];
+int main()
+{
+    int n;
+    scanf("%d",&n);
+    int tot,x,y;
+    memset(a,0,sizeof(a));
+    tot=a[x=n-1][y=n-1]=n*n;
+    while(tot>1)
+    {
+        while(y-1>=0&&!a[x][y-1])a[x][--y]=--tot;
+        while(y+1<n&&!a[x][y+1])a[x][++y]=--tot;
+        while(x-1>=0&&!a[x-1][y])a[--x][y]=--tot;
+        while(x+1<n&&!a[x+1][y])a[++x][y]=--tot;
+        //printf("%d\n",tot);
+    }
+    for(x=0;x<n;x++)
+    {
+        for(y=0;y<n;y++)
+        {
+          if(!y)printf("%d",a[x][y]);
+          else printf(" %d",a[x][y]);
+        }
+        printf("\n");
+    }
+    return 0;
+}
